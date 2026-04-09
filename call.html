@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Voice Call — Farm Doctor</title>
+<meta name="description" content="Talk to Farm Doctor AI live. Get instant crop diagnosis and farming advice by voice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800;9..144,900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;zoom: 103%}
+:root{
+--g1:#1a8c3f;--g2:#22c55e;--g3:#4ade80;
+--gold:#e89830;--gold2:#fbbf24;
+--bg:#080e0a;--bg2:#0d1710;--bg3:#121f15;
+--surface:rgba(255,255,255,.04);--border:rgba(255,255,255,.07);
+--t1:#f0fdf4;--t2:rgba(255,255,255,.7);--t3:rgba(255,255,255,.4);
+--r:16px;--rl:24px;
+--ff:'Outfit',sans-serif;--fd:'Fraunces','Georgia',serif;
+--ease:cubic-bezier(.22,1,.36,1);
+--red:#ef4444;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff);color:var(--t2);background:var(--bg);overflow-x:hidden;line-height:1.65;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+.c{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:14px 0;background:rgba(8,14,10,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav .c{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{height:40px}
+.nav-back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--t3);transition:color .3s}
+.nav-back:hover{color:var(--g3)}
+
+/* CALL PAGE */
+.call-page{flex:1;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+.call-page::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(26,140,63,.06),transparent)}
+
+.call-container{text-align:center;max-width:420px;width:100%;position:relative;z-index:2}
+
+/* Avatar / Orb */
+.call-orb-wrap{position:relative;width:200px;height:200px;margin:0 auto 32px}
+.call-orb{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--bg3),var(--bg));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;transition:all .6s var(--ease);overflow:hidden}
+.call-orb.active{border-color:var(--g2);box-shadow:0 0 60px rgba(34,197,94,.15),0 0 120px rgba(34,197,94,.06)}
+.call-orb.active .orb-pulse{animation:orbPulse 2s ease-in-out infinite}
+.orb-pulse{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--g2);opacity:0}
+@keyframes orbPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.3);opacity:0}}
+.call-orb img{width:100px;height:100px;border-radius:50%;opacity:.8}
+
+/* Voice Waveform */
+.waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:48px;margin-bottom:28px}
+.wave-bar{width:4px;height:6px;background:var(--g1);border-radius:4px;transition:height .15s ease}
+.waveform.active .wave-bar{animation:waveAnim 1.2s ease-in-out infinite;background:var(--g3)}
+.waveform.active .wave-bar:nth-child(1){animation-delay:0s}
+.waveform.active .wave-bar:nth-child(2){animation-delay:.1s}
+.waveform.active .wave-bar:nth-child(3){animation-delay:.15s}
+.waveform.active .wave-bar:nth-child(4){animation-delay:.2s}
+.waveform.active .wave-bar:nth-child(5){animation-delay:.08s}
+.waveform.active .wave-bar:nth-child(6){animation-delay:.25s}
+.waveform.active .wave-bar:nth-child(7){animation-delay:.12s}
+.waveform.active .wave-bar:nth-child(8){animation-delay:.3s}
+.waveform.active .wave-bar:nth-child(9){animation-delay:.05s}
+.waveform.active .wave-bar:nth-child(10){animation-delay:.18s}
+.waveform.active .wave-bar:nth-child(11){animation-delay:.22s}
+.waveform.active .wave-bar:nth-child(12){animation-delay:.28s}
+.waveform.active .wave-bar:nth-child(13){animation-delay:.1s}
+.waveform.active .wave-bar:nth-child(14){animation-delay:.16s}
+.waveform.active .wave-bar:nth-child(15){animation-delay:.24s}
+.waveform.active .wave-bar:nth-child(16){animation-delay:.06s}
+.waveform.active .wave-bar:nth-child(17){animation-delay:.2s}
+.waveform.active .wave-bar:nth-child(18){animation-delay:.14s}
+.waveform.active .wave-bar:nth-child(19){animation-delay:.26s}
+.waveform.active .wave-bar:nth-child(20){animation-delay:.09s}
+@keyframes waveAnim{0%,100%{height:6px}50%{height:36px}}
+
+/* Status */
+.call-status{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.call-sub{font-size:14px;color:var(--t3);margin-bottom:8px}
+.call-timer{font-family:var(--ff);font-size:28px;font-weight:300;color:var(--g3);margin-bottom:32px;letter-spacing:2px;opacity:0;transition:opacity .4s}
+.call-timer.visible{opacity:1}
+
+/* Controls */
+.call-controls{display:flex;align-items:center;justify-content:center;gap:20px}
+.ctrl-btn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease);position:relative}
+.ctrl-btn svg{width:26px;height:26px}
+.ctrl-btn:hover{transform:scale(1.08)}
+
+.btn-call{width:72px;height:72px;background:var(--g2);box-shadow:0 8px 30px rgba(34,197,94,.3)}
+.btn-call:hover{background:var(--g3);box-shadow:0 12px 40px rgba(34,197,94,.4)}
+.btn-call svg{fill:#fff;width:30px;height:30px}
+
+.btn-hangup{width:72px;height:72px;background:var(--red);box-shadow:0 8px 30px rgba(239,68,68,.3);display:none}
+.btn-hangup:hover{background:#dc2626;box-shadow:0 12px 40px rgba(239,68,68,.4)}
+.btn-hangup svg{fill:#fff;width:30px;height:30px;transform:rotate(135deg)}
+
+.btn-mute{background:var(--surface);border:1px solid var(--border);display:none}
+.btn-mute svg{stroke:var(--t2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-mute.muted{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3)}
+.btn-mute.muted svg{stroke:var(--red)}
+
+/* Info */
+.call-info{margin-top:40px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:left}
+.call-info p{font-size:13px;color:var(--t3);line-height:1.7}
+.call-info strong{color:var(--t1)}
+
+/* Error */
+.call-error{margin-top:16px;padding:12px 16px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);font-size:13px;color:#f87171;display:none}
+
+/* FOOTER */
+.ft{background:var(--bg2);border-top:1px solid var(--border);padding:20px 0}
+.ft-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.ft-copy{font-size:12px;color:var(--t3)}
+
+@media(max-width:500px){
+.call-orb-wrap{width:160px;height:160px}
+.call-orb{width:160px;height:160px}
+.call-orb img{width:80px;height:80px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="c">
+<a href="index.html"><img src="fdlogo.png" alt="Farm Doctor" class="nav-logo"></a>
+<a href="index.html" class="nav-back">&larr; Back to Home</a>
+</div></nav>
+
+<main class="call-page">
+<div class="call-container">
+
+<div class="call-orb-wrap">
+<div class="call-orb" id="callOrb">
+<div class="orb-pulse"></div>
+<img src="fdlogo.png" alt="Farm Doctor AI">
+</div>
+</div>
+
+<div class="waveform" id="waveform">
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+<div class="wave-bar"></div><div class="wave-bar"></div>
+</div>
+
+<div class="call-status" id="callStatus">Farm Doctor AI</div>
+<div class="call-sub" id="callSub">Tap the green button to start a voice call with our AI agronomist</div>
+<div class="call-timer" id="callTimer">00:00</div>
+
+<div class="call-controls">
+<button class="ctrl-btn btn-mute" id="muteBtn" onclick="toggleMute()" title="Mute">
+<svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+</button>
+<button class="ctrl-btn btn-call" id="callBtn" onclick="startCall()" title="Start Call">
+<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+</button>
+<button class="ctrl-btn btn-hangup" id="hangupBtn" onclick="endCall()" title="End Call">
+<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+</button>
+</div>
+
+<div class="call-error" id="callError"></div>
+
+<div class="call-info">
+<p><strong>How it works:</strong> Click the call button to connect with our AI agronomist. Describe your crop problems or ask farming questions in English, French, or Pidgin. The AI will respond with expert advice in real-time.</p>
+</div>
+
+</div>
+</main>
+
+<footer class="ft"><div class="c">
+<div class="ft-bar">
+<span class="ft-copy">&copy; 2026 Farm Doctor. All rights reserved.</span>
+<a href="index.html" style="font-size:13px;color:var(--g3)">Back to Home</a>
+</div>
+</div></footer>
+
+<!-- Retell AI Web SDK -->
+<script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@2/bundle/index.js"></script>
+<script>
+var BACKEND_URL = 'https://farmdoctor-backend.onrender.com';
+var retellClient = null;
+var callActive = false;
+var isMuted = false;
+var timerInterval = null;
+var callStartTime = null;
+
+function updateUI(state) {
+  var callBtn = document.getElementById('callBtn');
+  var hangupBtn = document.getElementById('hangupBtn');
+  var muteBtn = document.getElementById('muteBtn');
+  var orb = document.getElementById('callOrb');
+  var waveform = document.getElementById('waveform');
+  var status = document.getElementById('callStatus');
+  var sub = document.getElementById('callSub');
+  var timer = document.getElementById('callTimer');
+  var error = document.getElementById('callError');
+
+  error.style.display = 'none';
+
+  switch (state) {
+    case 'idle':
+      callBtn.style.display = 'flex';
+      hangupBtn.style.display = 'none';
+      muteBtn.style.display = 'none';
+      orb.classList.remove('active');
+      waveform.classList.remove('active');
+      timer.classList.remove('visible');
+      status.textContent = 'Farm Doctor AI';
+      sub.textContent = 'Tap the green button to start a voice call with our AI agronomist';
+      stopTimer();
+      break;
+    case 'connecting':
+      callBtn.style.display = 'none';
+      hangupBtn.style.display = 'flex';
+      muteBtn.style.display = 'none';
+      orb.classList.add('active');
+      waveform.classList.remove('active');
+      timer.classList.remove('visible');
+      status.textContent = 'Connecting...';
+      sub.textContent = 'Setting up your call with Farm Doctor AI';
+      break;
+    case 'active':
+      callBtn.style.display = 'none';
+      hangupBtn.style.display = 'flex';
+      muteBtn.style.display = 'flex';
+      orb.classList.add('active');
+      waveform.classList.add('active');
+      timer.classList.add('visible');
+      status.textContent = 'Call Active';
+      sub.textContent = 'Speak to describe your crop issue';
+      startTimer();
+      break;
+    case 'ended':
+      callBtn.style.display = 'flex';
+      hangupBtn.style.display = 'none';
+      muteBtn.style.display = 'none';
+      orb.classList.remove('active');
+      waveform.classList.remove('active');
+      status.textContent = 'Call Ended';
+      sub.textContent = 'Tap the green button to call again';
+      setTimeout(function() { timer.classList.remove('visible'); }, 3000);
+      stopTimer();
+      break;
+  }
+}
+
+function startTimer() {
+  callStartTime = Date.now();
+  var timerEl = document.getElementById('callTimer');
+  timerInterval = setInterval(function() {
+    var elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    var secs = (elapsed % 60).toString().padStart(2, '0');
+    timerEl.textContent = mins + ':' + secs;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function showError(msg) {
+  var error = document.getElementById('callError');
+  error.textContent = msg;
+  error.style.display = 'block';
+}
+
+async function startCall() {
+  if (callActive) return;
+  updateUI('connecting');
+
+  try {
+    // 1. Request a web call token from our backend
+    var res = await fetch(BACKEND_URL + '/api/retell/create-web-call', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+
+    if (!res.ok) {
+      var errData = await res.json().catch(function() { return {}; });
+      throw new Error(errData.message || 'Failed to create call session');
+    }
+
+    var data = await res.json();
+    var accessToken = data.access_token;
+
+    if (!accessToken) {
+      throw new Error('No access token received from server');
+    }
+
+    // 2. Initialize Retell Web Client
+    retellClient = new window.RetellWebClient();
+
+    retellClient.on('call_started', function() {
+      callActive = true;
+      updateUI('active');
+    });
+
+    retellClient.on('call_ended', function() {
+      callActive = false;
+      updateUI('ended');
+      retellClient = null;
+    });
+
+    retellClient.on('error', function(e) {
+      console.error('Retell error:', e);
+      callActive = false;
+      updateUI('idle');
+      showError('Call error: ' + (e.message || 'Connection lost. Please try again.'));
+      retellClient = null;
+    });
+
+    retellClient.on('agent_start_talking', function() {
+      document.getElementById('callSub').textContent = 'AI is speaking...';
+    });
+
+    retellClient.on('agent_stop_talking', function() {
+      document.getElementById('callSub').textContent = 'Listening...';
+    });
+
+    // 3. Start the call
+    await retellClient.startCall({ accessToken: accessToken });
+
+  } catch (err) {
+    console.error('Start call error:', err);
+    updateUI('idle');
+    showError(err.message || 'Failed to start call. Please check your microphone permissions and try again.');
+  }
+}
+
+async function endCall() {
+  if (retellClient) {
+    try {
+      retellClient.stopCall();
+    } catch (e) {
+      console.error('Error stopping call:', e);
+    }
+  }
+  callActive = false;
+  updateUI('ended');
+  retellClient = null;
+}
+
+function toggleMute() {
+  if (!retellClient || !callActive) return;
+  isMuted = !isMuted;
+  retellClient.toggleMicrophone(!isMuted);
+  var muteBtn = document.getElementById('muteBtn');
+  muteBtn.classList.toggle('muted', isMuted);
+  muteBtn.title = isMuted ? 'Unmute' : 'Mute';
+}
+
+// Initialize
+updateUI('idle');
+</script>
+</body>
+</html>
