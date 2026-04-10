@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     "crop diagnosis,farm AI,agriculture Cameroon,plant disease detection,WhatsApp farming,smart agriculture Africa",
   authors: [{ name: "Farm Doctor" }],
   icons: {
-    icon: "/fdlogo.png",
+    icon: { url: "/fdlogo.png", type: "image/png" },
+    shortcut: "/fdlogo.png",
     apple: "/fdlogo.png",
   },
   openGraph: {

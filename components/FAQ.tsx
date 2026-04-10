@@ -22,9 +22,9 @@ export function FAQ() {
           <h2 className="stl">{t("q.title")}</h2>
           <p className="sts">{t("q.sub")}</p>
         </div>
-        <div className="fl">
+        <div className="fl rv">
           {questions.map((item, i) => (
-            <div key={i} className={`fi rv${openIdx === i ? " open" : ""}`}>
+            <div key={i} className={`fi${openIdx === i ? " open" : ""}`}>
               <button
                 className="fq"
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
