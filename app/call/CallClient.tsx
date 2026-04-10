@@ -7,7 +7,7 @@ import { SimpleFooter } from "@/components/Footer";
 import { RetellWebClient } from "retell-client-js-sdk";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://farmdoctor-backend.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 const MAX_CALL_SECONDS = 3 * 60; // 3-minute limit
 const CALL_COOLDOWN_KEY = "fd_last_call";
@@ -51,7 +51,6 @@ export function CallClient() {
     };
   }, []);
 
-  const [sdkLoaded] = useState(true);
   const [callUsed, setCallUsed] = useState(false);
 
   // Check on mount if call was already used today
@@ -193,7 +192,7 @@ export function CallClient() {
         "Failed to start call. Please check your microphone permissions and try again."
       );
     }
-  }, [state, startTimer, stopTimer]);
+  }, [state, callUsed, startTimer, stopTimer]);
 
   const toggleMute = useCallback(() => {
     if (!mediaStreamRef.current || state !== "active") return;
@@ -297,9 +296,10 @@ export function CallClient() {
             {showCall && (
               <button
                 className="ctrl-btn btn-call"
+                style={{ opacity: callUsed ? 0.5 : 1 }}
                 onClick={startCall}
                 title={callUsed ? "1 call per day – try again tomorrow" : "Start Call"}
-                disabled={!sdkLoaded || callUsed}
+                disabled={callUsed}
               >
                 <svg viewBox="0 0 24 24">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
