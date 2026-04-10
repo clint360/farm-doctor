@@ -9,20 +9,40 @@ import { RetellWebClient } from "retell-client-js-sdk";
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
-const MAX_CALL_SECONDS = 3 * 60; // 3-minute limit
-const CALL_COOLDOWN_KEY = "fd_last_call";
-const CALL_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const MAX_DAILY_SECONDS = 3 * 60; // 3 minutes total per day
+const USAGE_KEY = "fd_call_usage";
 
-function canCallToday(): boolean {
-  try {
-    const last = localStorage.getItem(CALL_COOLDOWN_KEY);
-    if (!last) return true;
-    return Date.now() - Number(last) >= CALL_COOLDOWN_MS;
-  } catch { return true; }
+interface UsageData { date: string; usedSeconds: number }
+
+function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
-function markCallUsed(): void {
-  try { localStorage.setItem(CALL_COOLDOWN_KEY, String(Date.now())); } catch {}
+function getUsage(): UsageData {
+  try {
+    const raw = localStorage.getItem(USAGE_KEY);
+    if (!raw) return { date: todayKey(), usedSeconds: 0 };
+    const data: UsageData = JSON.parse(raw);
+    if (data.date !== todayKey()) return { date: todayKey(), usedSeconds: 0 };
+    return data;
+  } catch { return { date: todayKey(), usedSeconds: 0 }; }
+}
+
+function getRemainingSeconds(): number {
+  return Math.max(0, MAX_DAILY_SECONDS - getUsage().usedSeconds);
+}
+
+function addUsedSeconds(seconds: number): number {
+  const usage = getUsage();
+  usage.usedSeconds += Math.ceil(seconds);
+  try { localStorage.setItem(USAGE_KEY, JSON.stringify(usage)); } catch {}
+  return Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
+}
+
+function formatTime(totalSec: number): string {
+  const m = Math.floor(totalSec / 60).toString().padStart(2, "0");
+  const s = (totalSec % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
 }
 
 type CallState = "idle" | "connecting" | "active" | "ended";
@@ -32,6 +52,7 @@ export function CallClient() {
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [timer, setTimer] = useState("00:00");
+  const [callElapsed, setCallElapsed] = useState(0);
   const [subText, setSubText] = useState(
     "Tap the green button to start a voice call with our AI agronomist"
   );
@@ -51,11 +72,12 @@ export function CallClient() {
     };
   }, []);
 
-  const [callUsed, setCallUsed] = useState(false);
+  const [remainingSec, setRemainingSec] = useState(MAX_DAILY_SECONDS);
+  const exhausted = remainingSec <= 0;
 
-  // Check on mount if call was already used today
+  // Load remaining seconds on mount
   useEffect(() => {
-    setCallUsed(!canCallToday());
+    setRemainingSec(getRemainingSeconds());
   }, []);
 
   const endCallRef = useRef<(() => void) | null>(null);
@@ -67,19 +89,18 @@ export function CallClient() {
     }
   }, []);
 
-  const startTimer = useCallback(() => {
+  const startTimer = useCallback((maxSec: number) => {
     startTimeRef.current = Date.now();
+    setCallElapsed(0);
     timerRef.current = setInterval(() => {
       const elapsed = Math.floor(
         (Date.now() - startTimeRef.current) / 1000
       );
-      const mins = Math.floor(elapsed / 60)
-        .toString()
-        .padStart(2, "0");
-      const secs = (elapsed % 60).toString().padStart(2, "0");
-      setTimer(`${mins}:${secs}`);
+      setCallElapsed(elapsed);
+      setTimer(formatTime(elapsed));
+      setRemainingSec(Math.max(0, getRemainingSeconds() - elapsed));
 
-      if (elapsed >= MAX_CALL_SECONDS && endCallRef.current) {
+      if (elapsed >= maxSec && endCallRef.current) {
         endCallRef.current();
       }
     }, 1000);
@@ -91,8 +112,25 @@ export function CallClient() {
         retellRef.current.stopCall();
       } catch { }
     }
+
+    // Calculate duration and report to backend
+    const duration = startTimeRef.current
+      ? Math.ceil((Date.now() - startTimeRef.current) / 1000)
+      : 0;
+    if (duration > 0) {
+      const left = addUsedSeconds(duration);
+      setRemainingSec(left);
+      fetch(`${BACKEND_URL}/api/retell/call-ended`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duration }),
+      }).catch(() => {});
+    }
+
     setState("ended");
-    setSubText("Tap the green button to call again");
+    setSubText(getRemainingSeconds() > 0
+      ? "Tap the green button to call again"
+      : "You've used your 3 free minutes for today");
     setIsTalking(false);
     stopTimer();
     retellRef.current = null;
@@ -105,10 +143,10 @@ export function CallClient() {
   const startCall = useCallback(async () => {
     if (state === "active" || state === "connecting") return;
 
-    // Enforce 1 call/day on frontend
-    if (!canCallToday()) {
-      setCallUsed(true);
-      setError("You can only make 1 call per day. Please try again tomorrow.");
+    const left = getRemainingSeconds();
+    setRemainingSec(left);
+    if (left <= 0) {
+      setError("You've used your 3 free minutes for today. Please try again tomorrow.");
       return;
     }
 
@@ -130,13 +168,13 @@ export function CallClient() {
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         if (res.status === 429) {
-          setCallUsed(true);
-          markCallUsed();
+          setRemainingSec(0);
         }
         throw new Error(errData.message || "Failed to create call session");
       }
 
       const data = await res.json();
+      const serverRemaining: number = data.remaining_seconds ?? left;
 
       if (!data.access_token)
         throw new Error("No access token received from server");
@@ -147,17 +185,11 @@ export function CallClient() {
       client.on("call_started", () => {
         setState("active");
         setSubText("Speak to describe your crop issue");
-        markCallUsed();
-        setCallUsed(true);
-        startTimer();
+        startTimer(serverRemaining);
       });
 
       client.on("call_ended", () => {
-        setState("ended");
-        setSubText("Tap the green button to call again");
-        setIsTalking(false);
-        stopTimer();
-        retellRef.current = null;
+        endCallRef.current?.();
       });
 
       client.on("error", (e: unknown) => {
@@ -192,7 +224,7 @@ export function CallClient() {
         "Failed to start call. Please check your microphone permissions and try again."
       );
     }
-  }, [state, callUsed, startTimer, stopTimer]);
+  }, [state, startTimer, stopTimer]);
 
   const toggleMute = useCallback(() => {
     if (!mediaStreamRef.current || state !== "active") return;
@@ -216,12 +248,9 @@ export function CallClient() {
   const showMute = state === "active";
   const showTimer = state === "active" || state === "ended";
 
-  const elapsed = startTimeRef.current
-    ? Math.floor((Date.now() - startTimeRef.current) / 1000)
-    : 0;
-
-  const remaining = MAX_CALL_SECONDS - elapsed;
-  const isLowTime = isActive && remaining <= 60 && remaining > 0;
+  // Blink red when 67% of today's allowance is used (including this call)
+  const totalUsedToday = getUsage().usedSeconds + callElapsed;
+  const isWarning = isActive && totalUsedToday >= MAX_DAILY_SECONDS * 0.67;
 
   const statusText =
     state === "connecting"
@@ -267,14 +296,14 @@ export function CallClient() {
           <div className="call-sub">{subText}</div>
 
           <div
-            className={`call-timer${showTimer ? " visible" : ""}${isLowTime ? " low" : ""
+            className={`call-timer${showTimer ? " visible" : ""}${isWarning ? " low" : ""
               }`}
           >
             {timer}
           </div>
 
           {isActive && (
-            <div className="call-limit-hint">3 min limit &middot; 1 call per day</div>
+            <div className="call-limit-hint">{formatTime(remainingSec)} remaining today</div>
           )}
 
           <div className="call-controls">
@@ -296,9 +325,9 @@ export function CallClient() {
             {showCall && (
               <button
                 className="ctrl-btn btn-call"
-                style={{ opacity: callUsed ? 0.5 : 1 }}
+                style={{ opacity: exhausted ? 0.5 : 1 }}
                 onClick={startCall}
-                title={callUsed ? "1 call per day – try again tomorrow" : "Start Call"}
+                title={exhausted ? "No minutes left today" : "Start Call"}
               >
                 <svg viewBox="0 0 24 24">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
