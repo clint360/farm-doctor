@@ -22,6 +22,7 @@ export function ExpertApplyClient() {
   const [transId, setTransId] = useState("");
   const [pollStatus, setPollStatus] = useState("");
   const [pollMessage, setPollMessage] = useState("");
+  const [pollStart, setPollStart] = useState(0);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -51,6 +52,7 @@ export function ExpertApplyClient() {
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       setTransId(data.transId);
+      setPollStart(Date.now());
       setStep("polling");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
@@ -59,8 +61,17 @@ export function ExpertApplyClient() {
     }
   };
 
+  const POLL_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+
   const pollPayment = useCallback(async () => {
     if (!transId) return;
+
+    if (pollStart && Date.now() - pollStart > POLL_TIMEOUT_MS) {
+      setError("Payment timed out. Please try again or check your MoMo notifications.");
+      setStep("form");
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/api/expert-apply/status/${transId}`);
       const data = await res.json();
@@ -69,13 +80,13 @@ export function ExpertApplyClient() {
       if (data.activated) {
         setStep("done");
       } else if (data.status === "FAILED" || data.status === "EXPIRED") {
-        setError(data.message);
+        setError(data.message || "Payment failed. Please try again.");
         setStep("form");
       }
     } catch {
       // silent retry
     }
-  }, [transId]);
+  }, [transId, pollStart]);
 
   useEffect(() => {
     if (step !== "polling") return;
@@ -203,6 +214,12 @@ export function ExpertApplyClient() {
                   </span>
                 </div>
                 {pollMessage && <p style={{ marginTop: 12, fontSize: 13, color: "var(--t3)" }}>{pollMessage}</p>}
+                <button
+                  onClick={() => { setError("Payment cancelled."); setStep("form"); }}
+                  style={{ marginTop: 24, background: "none", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "10px 24px", color: "var(--t3)", cursor: "pointer", fontSize: 14, fontFamily: "var(--ff)" }}
+                >
+                  Cancel
+                </button>
               </div>
             )}
 

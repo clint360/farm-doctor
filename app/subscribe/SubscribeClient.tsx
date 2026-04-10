@@ -36,6 +36,7 @@ export default function SubscribeClient() {
   const [error, setError] = useState("");
   const [pollStatus, setPollStatus] = useState("");
   const [pollMessage, setPollMessage] = useState("");
+  const [pollStart, setPollStart] = useState(0);
 
   // ── Step 1: Lookup phone ──
   const lookupPhone = async () => {
@@ -78,6 +79,7 @@ export default function SubscribeClient() {
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       setTransId(data.transId);
+      setPollStart(Date.now());
       setStep("polling");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Payment initiation failed");
@@ -86,9 +88,19 @@ export default function SubscribeClient() {
     }
   };
 
+  const POLL_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+
   // ── Step 4: Poll payment status ──
   const pollPayment = useCallback(async () => {
     if (!transId) return;
+
+    // Timeout: if polling > 2 min, treat as failed
+    if (pollStart && Date.now() - pollStart > POLL_TIMEOUT_MS) {
+      setError("Payment timed out. Please try again or check your MoMo notifications.");
+      setStep("checkout");
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/api/subscription/status/${transId}`);
       const data = await res.json();
@@ -97,13 +109,13 @@ export default function SubscribeClient() {
       if (data.activated) {
         setStep("done");
       } else if (data.status === "FAILED" || data.status === "EXPIRED") {
-        setError(data.message);
+        setError(data.message || "Payment failed. Please try again.");
         setStep("checkout");
       }
     } catch {
       // silent retry
     }
-  }, [transId]);
+  }, [transId, pollStart]);
 
   useEffect(() => {
     if (step !== "polling") return;
@@ -286,6 +298,12 @@ export default function SubscribeClient() {
                 </span>
               </div>
               {pollMessage && <p style={{ marginTop: 12, fontSize: 13, color: "var(--t3)" }}>{pollMessage}</p>}
+              <button
+                onClick={() => { setError("Payment cancelled."); setStep("checkout"); }}
+                style={{ marginTop: 24, background: "none", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "10px 24px", color: "var(--t3)", cursor: "pointer", fontSize: 14, fontFamily: "var(--ff)" }}
+              >
+                Cancel
+              </button>
             </div>
           )}
 
