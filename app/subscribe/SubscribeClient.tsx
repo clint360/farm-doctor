@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
+import { WA_LINK, WHATSAPP_NUMBER } from "@/lib/contacts";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -39,7 +40,7 @@ export default function SubscribeClient() {
   // ── Step 1: Lookup phone ──
   const lookupPhone = async () => {
     if (!phone || phone.length < 9) {
-      setError("Enter a valid phone number (e.g. 237693477577)");
+      setError(`Enter a valid phone number (e.g. ${WHATSAPP_NUMBER})`);
       return;
     }
     setLoading(true);
@@ -140,7 +141,7 @@ export default function SubscribeClient() {
                 <label>Your Phone Number <span className="req">*</span></label>
                 <input
                   type="tel"
-                  placeholder="e.g. 237693477577"
+                  placeholder={`e.g. ${WHATSAPP_NUMBER}`}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   onKeyDown={(e) => e.key === "Enter" && lookupPhone()}
@@ -246,7 +247,7 @@ export default function SubscribeClient() {
                 <label>MoMo Number <span className="req">*</span></label>
                 <input
                   type="tel"
-                  placeholder="e.g. 237693477577"
+                  placeholder={`e.g. ${WHATSAPP_NUMBER}`}
                   value={momoNumber}
                   onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, ""))}
                 />
@@ -304,7 +305,7 @@ export default function SubscribeClient() {
                 Start chatting on WhatsApp or Telegram to use your new benefits.
               </p>
               <div style={{ marginTop: 28, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <a href="https://wa.me/237693477577" className="btn btn-wa" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <a href={WA_LINK} className="btn btn-wa" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                   Open WhatsApp
                 </a>
                 <a href="/" className="btn btn-o">Back to Home</a>

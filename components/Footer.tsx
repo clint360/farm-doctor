@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n";
 import { WhatsAppIcon, TelegramIcon, FacebookIcon } from "./icons";
+import { WA_LINK, TG_LINK, FACEBOOK_URL, WHATSAPP_DISPLAY, CALL_NUMBER, CALL_DISPLAY, COMPANY_PHONE, COMPANY_DISPLAY, TELEGRAM_BOT } from "@/lib/contacts";
 
 export function Footer() {
   const { t } = useI18n();
@@ -16,10 +17,10 @@ export function Footer() {
           </div>
           <div className="ft-col">
             <h4>{t("ft.contact")}</h4>
-            <a href="https://wa.me/237693477577" target="_blank" rel="noopener">WhatsApp: +237 6 93 47 75 77</a>
-            <a href="https://t.me/Farm_doctor_bot" target="_blank" rel="noopener">Telegram: @Farm_doctor_bot</a>
-            <a href="tel:+237680612360" className="ft-phone">Calls: +237 6 80 61 23 60</a>
-            <a href="tel:+237693477577" className="ft-phone">Company: +237 6 93 47 75 77</a>
+            <a href={WA_LINK} target="_blank" rel="noopener">WhatsApp: {WHATSAPP_DISPLAY}</a>
+            <a href={TG_LINK} target="_blank" rel="noopener">Telegram: @{TELEGRAM_BOT}</a>
+            <a href={`tel:+${CALL_NUMBER}`} className="ft-phone">Calls: {CALL_DISPLAY}</a>
+            <a href={`tel:+${COMPANY_PHONE}`} className="ft-phone">Company: {COMPANY_DISPLAY}</a>
           </div>
           <div className="ft-col">
             <h4>{t("ft.links")}</h4>
@@ -34,9 +35,9 @@ export function Footer() {
         <div className="ft-bar">
           <span className="ft-copy">&copy; 2026 Farm Doctor. {t("ft.rights")}</span>
           <div className="ft-socials">
-            <a href="https://www.facebook.com/share/1AR6vKAdz6/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><FacebookIcon /></a>
-            <a href="https://wa.me/237693477577" target="_blank" rel="noopener" aria-label="WhatsApp"><WhatsAppIcon /></a>
-            <a href="https://t.me/Farm_doctor_bot" target="_blank" rel="noopener" aria-label="Telegram"><TelegramIcon /></a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noopener" aria-label="Facebook"><FacebookIcon /></a>
+            <a href={WA_LINK} target="_blank" rel="noopener" aria-label="WhatsApp"><WhatsAppIcon /></a>
+            <a href={TG_LINK} target="_blank" rel="noopener" aria-label="Telegram"><TelegramIcon /></a>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, FormEvent } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
+import { WHATSAPP_NUMBER } from "@/lib/contacts";
 
 const API = "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -91,7 +92,7 @@ export function ExpertApplyClient() {
         <div className="c">
           <div className="tag">Expert Program</div>
           <h2 className="stl">Become a Farm Doctor Expert</h2>
-          <p className="sts">Share your agricultural expertise with farmers in your region. Get paid for consultations and help build food security across Cameroon.</p>
+          <p className="sts text-center m-auto" style={{margin: "auto"}}>Share your agricultural expertise with farmers in your region. Get paid for consultations and help build food security across Cameroon.</p>
 
           <div className="benefits">
             <div className="benefit">
@@ -132,7 +133,7 @@ export function ExpertApplyClient() {
 
                 <div className="form-group">
                   <label>Phone Number <span className="req">*</span></label>
-                  <input type="tel" placeholder="e.g. 237693477577" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <input type="tel" placeholder={`e.g. ${WHATSAPP_NUMBER}`} required value={phone} onChange={(e) => setPhone(e.target.value)} />
                   <div className="hint">This will be shared with farmers who request expert help in your area.</div>
                 </div>
 
@@ -169,7 +170,7 @@ export function ExpertApplyClient() {
                   <div className="momo-input show">
                     <input
                       type="tel"
-                      placeholder="MoMo number (e.g. 237693477577)"
+                      placeholder={`MoMo number (e.g. ${WHATSAPP_NUMBER})`}
                       value={momoNumber}
                       onChange={(e) => setMomoNumber(e.target.value)}
                     />

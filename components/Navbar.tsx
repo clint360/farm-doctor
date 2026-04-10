@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n";
+import { WA_LINK } from "@/lib/contacts";
 
 export function Navbar() {
   const { t, lang, toggleLang } = useI18n();
@@ -36,7 +37,7 @@ export function Navbar() {
           <li><a href="#faq" onClick={(e) => handleNavClick(e, "#faq")}>{t("nav.faq")}</a></li>
           <li><button className="ls" onClick={toggleLang}>{lang === "en" ? "FR" : lang === "fr" ? "PID" : "EN"}</button></li>
           <li>
-            <a href="https://wa.me/237693477577" className="nav-cta" target="_blank" rel="noopener">
+            <a href={WA_LINK} className="nav-cta" target="_blank" rel="noopener">
               {t("nav.cta")}
             </a>
           </li>
