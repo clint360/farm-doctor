@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   keywords:
     "crop diagnosis,farm AI,agriculture Cameroon,plant disease detection,WhatsApp farming,smart agriculture Africa",
   authors: [{ name: "Farm Doctor" }],
+  icons: {
+    icon: "/fdlogo.png",
+    apple: "/fdlogo.png",
+  },
   openGraph: {
     type: "website",
     title: "Farm Doctor — AI Crop Diagnosis for African Farmers",

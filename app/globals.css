@@ -265,10 +265,20 @@ a{color:inherit;text-decoration:none}
 .waveform.active .wave-bar:nth-child(19){animation-delay:.26s}
 .waveform.active .wave-bar:nth-child(20){animation-delay:.09s}
 @keyframes waveAnim{0%,100%{height:6px}50%{height:36px}}
+@keyframes waveAnimTalking{0%,100%{height:8px}50%{height:44px}}
+@keyframes orbTalkPulse{0%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:.3}100%{transform:scale(1.3);opacity:0}}
+.call-orb.talking{border-color:var(--gold);box-shadow:0 0 80px rgba(232,152,48,.2),0 0 160px rgba(232,152,48,.08)}
+.call-orb.talking .orb-pulse{border-color:var(--gold);animation:orbTalkPulse 1.4s ease-in-out infinite}
+.call-orb.talking .orb-pulse-2{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--gold);opacity:0;animation:orbTalkPulse 1.4s ease-in-out infinite .7s}
+.call-orb.talking img{opacity:1}
+.waveform.talking .wave-bar{animation:waveAnimTalking .8s ease-in-out infinite;background:var(--gold)}
 .call-status{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t1);margin-bottom:6px}
 .call-sub{font-size:14px;color:var(--t3);margin-bottom:8px}
 .call-timer{font-family:var(--ff);font-size:28px;font-weight:300;color:var(--g3);margin-bottom:32px;letter-spacing:2px;opacity:0;transition:opacity .4s}
 .call-timer.visible{opacity:1}
+.call-timer.low{color:#f87171;animation:timerBlink 1s ease-in-out infinite}
+@keyframes timerBlink{0%,100%{opacity:1}50%{opacity:.4}}
+.call-limit-hint{font-size:12px;color:var(--t3);margin:-24px 0 28px;opacity:.6}
 .call-controls{display:flex;align-items:center;justify-content:center;gap:20px}
 .ctrl-btn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease);position:relative}
 .ctrl-btn svg{width:26px;height:26px}

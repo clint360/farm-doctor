@@ -34,7 +34,7 @@ export function Navbar() {
           <li><a href="#channels" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
           <li><a href="#pricing" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
           <li><a href="#faq" onClick={(e) => handleNavClick(e, "#faq")}>{t("nav.faq")}</a></li>
-          <li><button className="ls" onClick={toggleLang}>{lang === "en" ? "FR" : "EN"}</button></li>
+          <li><button className="ls" onClick={toggleLang}>{lang === "en" ? "FR" : lang === "fr" ? "PID" : "EN"}</button></li>
           <li>
             <a href="https://wa.me/237693477577" className="nav-cta" target="_blank" rel="noopener">
               {t("nav.cta")}

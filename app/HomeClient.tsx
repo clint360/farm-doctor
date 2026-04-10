@@ -228,7 +228,7 @@ export function HomeClient() {
                 <li>{t("p.1c")}</li>
                 <li>{t("p.1d")}</li>
               </ul>
-              <a href="https://wa.me/237693477577?text=I%20want%20the%20Starter%20plan" className="btn btn-p btn-g" target="_blank">{t("p.btn")}</a>
+              <a href="/subscribe" className="btn btn-p btn-g">{t("p.btn")}</a>
             </div>
             <div className="pc pop rv">
               <div className="pc-badge">{t("p.pop")}</div>
@@ -242,7 +242,7 @@ export function HomeClient() {
                 <li>{t("p.2d")}</li>
                 <li>{t("p.2e")}</li>
               </ul>
-              <a href="https://wa.me/237693477577?text=I%20want%20the%20Pro%20Farmer%20plan" className="btn btn-p btn-gd" target="_blank">{t("p.btn")}</a>
+              <a href="/subscribe" className="btn btn-p btn-gd">{t("p.btn")}</a>
             </div>
             <div className="pc rv">
               <h3>{t("p.3n")}</h3>
@@ -254,7 +254,7 @@ export function HomeClient() {
                 <li>{t("p.3d")}</li>
                 <li>{t("p.3e")}</li>
               </ul>
-              <a href="https://wa.me/237693477577?text=I%20want%20the%20Cooperative%20plan" className="btn btn-p btn-g" target="_blank">{t("p.btn")}</a>
+              <a href="/subscribe" className="btn btn-p btn-g">{t("p.btn")}</a>
             </div>
           </div>
         </div>
