@@ -4,7 +4,7 @@ import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { PHONE_PLACEHOLDER } from "@/lib/contacts";
 
-const API = "https://shon-unmonumented-nigel.ngrok-free.dev";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 type Step = "form" | "polling" | "done";
 

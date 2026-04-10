@@ -47,7 +47,16 @@ export default function SubscribeClient() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/api/subscription?phone=${encodeURIComponent(phone)}`);
+      const res = await fetch(
+        `${API}/api/subscription?phone=${encodeURIComponent(phone)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        }
+      );
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       setPlans(data.plans || []);
