@@ -246,11 +246,11 @@ export default function SubscribeClient() {
 
               <div className="payment-methods">
                 <div className={`pm${medium === "mobile money" ? " active" : ""}`} onClick={() => setMedium("mobile money")}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20"/></svg>
+                  <img src="/mobile-money.jpg" alt="Mobile Money" width={28} height={28} style={{ borderRadius: 6, objectFit: "cover" }} />
                   MTN MoMo
                 </div>
                 <div className={`pm${medium === "orange money" ? " active" : ""}`} onClick={() => setMedium("orange money")}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20"/></svg>
+                  <img src="/mobile-money.jpg" alt="Mobile Money" width={28} height={28} style={{ borderRadius: 6, objectFit: "cover" }} />
                   Orange Money
                 </div>
               </div>

@@ -170,11 +170,11 @@ export function ExpertApplyClient() {
                   <p>One-time annual fee to be listed as a verified expert on Farm Doctor. Your profile will be visible to subscribed farmers in your area.</p>
                   <div className="payment-methods">
                     <div className={`pm${medium === "mobile money" ? " active" : ""}`} onClick={() => setMedium("mobile money")}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--gold2)"><circle cx="12" cy="12" r="10"/></svg>
+                      <img src="/mobile-money.jpg" alt="Mobile Money" width={28} height={28} style={{ borderRadius: 6, objectFit: "cover" }} />
                       MTN MoMo
                     </div>
                     <div className={`pm${medium === "orange money" ? " active" : ""}`} onClick={() => setMedium("orange money")}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff6600"><circle cx="12" cy="12" r="10"/></svg>
+                      <img src="/mobile-money.jpg" alt="Mobile Money" width={28} height={28} style={{ borderRadius: 6, objectFit: "cover" }} />
                       Orange Money
                     </div>
                   </div>
