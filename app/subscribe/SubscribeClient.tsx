@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
-import { WA_LINK, WHATSAPP_NUMBER } from "@/lib/contacts";
+import { WA_LINK, PHONE_PLACEHOLDER } from "@/lib/contacts";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -40,7 +40,7 @@ export default function SubscribeClient() {
   // ── Step 1: Lookup phone ──
   const lookupPhone = async () => {
     if (!phone || phone.length < 9) {
-      setError(`Enter a valid phone number (e.g. ${WHATSAPP_NUMBER})`);
+      setError(`Enter a valid phone number (e.g. ${PHONE_PLACEHOLDER})`);
       return;
     }
     setLoading(true);
@@ -141,7 +141,7 @@ export default function SubscribeClient() {
                 <label>Your Phone Number <span className="req">*</span></label>
                 <input
                   type="tel"
-                  placeholder={`e.g. ${WHATSAPP_NUMBER}`}
+                  placeholder={`e.g. ${PHONE_PLACEHOLDER}`}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   onKeyDown={(e) => e.key === "Enter" && lookupPhone()}
@@ -247,7 +247,7 @@ export default function SubscribeClient() {
                 <label>MoMo Number <span className="req">*</span></label>
                 <input
                   type="tel"
-                  placeholder={`e.g. ${WHATSAPP_NUMBER}`}
+                  placeholder={`e.g. ${PHONE_PLACEHOLDER}`}
                   value={momoNumber}
                   onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, ""))}
                 />

@@ -11,5 +11,7 @@ export const COMPANY_DISPLAY = process.env.NEXT_PUBLIC_COMPANY_DISPLAY || "+237 
 export const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT || "Farm_doctor_bot";
 export const FACEBOOK_URL = process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/share/1AR6vKAdz6/?mibextid=wwXIfr";
 
+export const PHONE_PLACEHOLDER = process.env.NEXT_PUBLIC_PHONE_PLACEHOLDER || "680612360";
+
 export const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const TG_LINK = `https://t.me/${TELEGRAM_BOT}`;

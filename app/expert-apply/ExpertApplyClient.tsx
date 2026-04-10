@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, FormEvent } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
-import { WHATSAPP_NUMBER } from "@/lib/contacts";
+import { PHONE_PLACEHOLDER } from "@/lib/contacts";
 
 const API = "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -133,7 +133,7 @@ export function ExpertApplyClient() {
 
                 <div className="form-group">
                   <label>Phone Number <span className="req">*</span></label>
-                  <input type="tel" placeholder={`e.g. ${WHATSAPP_NUMBER}`} required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <input type="tel" placeholder={`e.g. ${PHONE_PLACEHOLDER}`} required value={phone} onChange={(e) => setPhone(e.target.value)} />
                   <div className="hint">This will be shared with farmers who request expert help in your area.</div>
                 </div>
 
@@ -170,7 +170,7 @@ export function ExpertApplyClient() {
                   <div className="momo-input show">
                     <input
                       type="tel"
-                      placeholder={`MoMo number (e.g. ${WHATSAPP_NUMBER})`}
+                      placeholder={`MoMo number (e.g. ${PHONE_PLACEHOLDER})`}
                       value={momoNumber}
                       onChange={(e) => setMomoNumber(e.target.value)}
                     />
