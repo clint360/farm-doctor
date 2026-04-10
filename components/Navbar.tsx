@@ -1,19 +1,42 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, Lang } from "@/lib/i18n";
 import { WA_LINK } from "@/lib/contacts";
 
+const LANGS: { code: Lang; label: string }[] = [
+  { code: "en", label: "English" },
+  { code: "fr", label: "Français" },
+  { code: "pid", label: "Pidgin" },
+];
+
 export function Navbar() {
-  const { t, lang, toggleLang } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  // Close lang dropdown on outside click
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -23,6 +46,11 @@ export function Navbar() {
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     setMenuOpen(false);
+  };
+
+  const selectLang = (code: Lang) => {
+    setLang(code);
+    setLangOpen(false);
   };
 
   return (
@@ -35,14 +63,34 @@ export function Navbar() {
           <li><a href="#channels" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
           <li><a href="#pricing" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
           <li><a href="#faq" onClick={(e) => handleNavClick(e, "#faq")}>{t("nav.faq")}</a></li>
-          <li><button className="ls" onClick={toggleLang}>{lang === "en" ? "FR" : lang === "fr" ? "PID" : "EN"}</button></li>
+          <li>
+            <div className="lang-drop" ref={langRef}>
+              <button className="ls" onClick={() => setLangOpen(!langOpen)}>
+                {lang.toUpperCase()} <span className={`ls-arrow${langOpen ? " open" : ""}`}>▾</span>
+              </button>
+              {langOpen && (
+                <ul className="lang-menu">
+                  {LANGS.map((l) => (
+                    <li key={l.code}>
+                      <button
+                        className={`lang-opt${l.code === lang ? " active" : ""}`}
+                        onClick={() => selectLang(l.code)}
+                      >
+                        {l.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
           <li>
             <a href={WA_LINK} className="nav-cta" target="_blank" rel="noopener">
               {t("nav.cta")}
             </a>
           </li>
         </ul>
-        <button className="hb" aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className={`hb${menuOpen ? " open" : ""}`} aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}>
           <span /><span /><span />
         </button>
       </div>

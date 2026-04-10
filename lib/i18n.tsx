@@ -336,12 +336,14 @@ const T: Record<Lang, Record<string, string>> = {
 interface I18nContextType {
   lang: Lang;
   t: (key: string) => string;
+  setLang: (lang: Lang) => void;
   toggleLang: () => void;
 }
 
 const I18nContext = createContext<I18nContextType>({
   lang: "en",
   t: (k) => k,
+  setLang: () => {},
   toggleLang: () => {},
 });
 
@@ -358,7 +360,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <I18nContext.Provider value={{ lang, t, toggleLang }}>
+    <I18nContext.Provider value={{ lang, t, setLang, toggleLang }}>
       {children}
     </I18nContext.Provider>
   );
