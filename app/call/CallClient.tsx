@@ -113,10 +113,11 @@ export function CallClient() {
       } catch { }
     }
 
-    // Calculate duration and report to backend
+    // Calculate duration and report to backend (reset ref to prevent double-counting)
     const duration = startTimeRef.current
       ? Math.ceil((Date.now() - startTimeRef.current) / 1000)
       : 0;
+    startTimeRef.current = 0;
     if (duration > 0) {
       const left = addUsedSeconds(duration);
       setRemainingSec(left);
