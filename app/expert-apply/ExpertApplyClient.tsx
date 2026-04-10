@@ -61,7 +61,7 @@ export function ExpertApplyClient() {
     }
   };
 
-  const POLL_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+  const POLL_TIMEOUT_MS = 1 * 60 * 1000; // 2 minutes
 
   const pollPayment = useCallback(async () => {
     if (!transId) return;

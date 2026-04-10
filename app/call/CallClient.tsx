@@ -41,14 +41,15 @@ export function CallClient() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
 
-  // Get mic stream manually
-  navigator.mediaDevices.getUserMedia({ audio: true })
-  .then((stream) => {
-    mediaStreamRef.current = stream;
-  })
-  .catch((err) => {
-    console.error("Microphone access denied:", err);
-  });
+  // Request mic permission once on mount (must be in useEffect for SSR safety)
+  useEffect(() => {
+    navigator.mediaDevices?.getUserMedia({ audio: true })
+      .then((stream) => { mediaStreamRef.current = stream; })
+      .catch((err) => { console.error("Microphone access denied:", err); });
+    return () => {
+      mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
 
   const [sdkLoaded] = useState(true);
   const [callUsed, setCallUsed] = useState(false);

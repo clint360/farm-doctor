@@ -88,7 +88,7 @@ export default function SubscribeClient() {
     }
   };
 
-  const POLL_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+  const POLL_TIMEOUT_MS = 1 * 60 * 1000; // 2 minutes
 
   // ── Step 4: Poll payment status ──
   const pollPayment = useCallback(async () => {
