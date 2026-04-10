@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://farmdoctor-backend.onrender.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 type Plan = {
   name: string;

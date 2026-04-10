@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, FormEvent } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 
-const API = "https://farmdoctor-backend.onrender.com";
+const API = "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 type Step = "form" | "polling" | "done";
 
