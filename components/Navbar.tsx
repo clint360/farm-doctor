@@ -52,12 +52,17 @@ export function Navbar() {
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href.startsWith("#")) {
-      e.preventDefault();
-      const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    e.preventDefault();
     setMenuOpen(false);
+    setLangOpen(false);
+
+    if (href.startsWith("#")) {
+      // Delay scroll until after scroll-lock is released and layout restores
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
   };
 
   const selectLang = (code: Lang) => {
