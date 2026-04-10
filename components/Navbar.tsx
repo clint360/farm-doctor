@@ -24,10 +24,22 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll when mobile menu is open (iOS-safe)
+  const scrollYRef = useRef(0);
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (menuOpen) {
+      scrollYRef.current = window.scrollY;
+      document.documentElement.classList.add("menu-open");
+      document.body.style.top = `-${scrollYRef.current}px`;
+    } else {
+      document.documentElement.classList.remove("menu-open");
+      document.body.style.top = "";
+      window.scrollTo(0, scrollYRef.current);
+    }
+    return () => {
+      document.documentElement.classList.remove("menu-open");
+      document.body.style.top = "";
+    };
   }, [menuOpen]);
 
   // Close lang dropdown on outside click
