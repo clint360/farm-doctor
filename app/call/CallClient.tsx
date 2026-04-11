@@ -9,6 +9,11 @@ import { RetellWebClient } from "retell-client-js-sdk";
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
+const apiHeaders: Record<string, string> = {
+  "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "true",
+};
+
 const MAX_DAILY_SECONDS = 3 * 60; // 3 minutes total per day
 const USAGE_KEY = "fd_call_usage";
 
@@ -123,7 +128,7 @@ export function CallClient() {
       setRemainingSec(left);
       fetch(`${BACKEND_URL}/api/retell/call-ended`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders,
         body: JSON.stringify({ duration }),
       }).catch(() => {});
     }
@@ -161,7 +166,7 @@ export function CallClient() {
         `${BACKEND_URL}/api/retell/create-web-call`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: apiHeaders,
           body: JSON.stringify({}),
         }
       );

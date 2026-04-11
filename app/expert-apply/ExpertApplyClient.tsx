@@ -6,6 +6,12 @@ import { PHONE_PLACEHOLDER } from "@/lib/contacts";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
+const apiHeaders: Record<string, string> = {
+  "Content-Type": "application/json",
+  "Accept": "application/json",
+  "ngrok-skip-browser-warning": "true",
+};
+
 type Step = "form" | "polling" | "done";
 
 export function ExpertApplyClient() {
@@ -37,7 +43,7 @@ export function ExpertApplyClient() {
     try {
       const res = await fetch(`${API}/api/expert-apply`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders,
         body: JSON.stringify({
           full_name: fullName,
           phone,
@@ -73,7 +79,9 @@ export function ExpertApplyClient() {
     }
 
     try {
-      const res = await fetch(`${API}/api/expert-apply/status/${transId}`);
+      const res = await fetch(`${API}/api/expert-apply/status/${transId}`, {
+        headers: apiHeaders,
+      });
       const data = await res.json();
       setPollStatus(data.status);
       setPollMessage(data.message);

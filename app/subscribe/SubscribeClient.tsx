@@ -6,6 +6,12 @@ import { WA_LINK, PHONE_PLACEHOLDER } from "@/lib/contacts";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
+const apiHeaders: Record<string, string> = {
+  "Content-Type": "application/json",
+  "Accept": "application/json",
+  "ngrok-skip-browser-warning": "true",
+};
+
 type Plan = {
   name: string;
   price: number;
@@ -49,13 +55,7 @@ export default function SubscribeClient() {
     try {
       const res = await fetch(
         `${API}/api/subscription?phone=${encodeURIComponent(phone)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        }
+        { headers: apiHeaders }
       );
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
@@ -82,7 +82,7 @@ export default function SubscribeClient() {
     try {
       const res = await fetch(`${API}/api/subscription`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders,
         body: JSON.stringify({ phone, plan: selectedPlan, momo_number: momoNumber, medium }),
       });
       const data = await res.json();
@@ -111,7 +111,9 @@ export default function SubscribeClient() {
     }
 
     try {
-      const res = await fetch(`${API}/api/subscription/status/${transId}`);
+      const res = await fetch(`${API}/api/subscription/status/${transId}`, {
+        headers: apiHeaders,
+      });
       const data = await res.json();
       setPollStatus(data.status);
       setPollMessage(data.message);
