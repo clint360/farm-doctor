@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { WA_LINK, PHONE_PLACEHOLDER } from "@/lib/contacts";
+import { useI18n } from "@/lib/i18n";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -28,6 +29,7 @@ type SubInfo = {
 type Step = "phone" | "plans" | "checkout" | "polling" | "done";
 
 export default function SubscribeClient() {
+  const { t } = useI18n();
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -47,7 +49,7 @@ export default function SubscribeClient() {
   // ── Step 1: Lookup phone ──
   const lookupPhone = async () => {
     if (!phone || phone.length < 9) {
-      setError(`Enter a valid phone number (e.g. ${PHONE_PLACEHOLDER})`);
+      setError(`${t("sub.phone.error")} (e.g. ${PHONE_PLACEHOLDER})`);
       return;
     }
     setLoading(true);
@@ -65,7 +67,7 @@ export default function SubscribeClient() {
       setIsActive(data.isActive || false);
       setStep("plans");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to check subscription");
+      setError(err instanceof Error ? err.message : t("sub.error.fetch"));
     } finally {
       setLoading(false);
     }
@@ -74,7 +76,7 @@ export default function SubscribeClient() {
   // ── Step 3: Initiate payment ──
   const initiatePayment = async () => {
     if (!momoNumber || momoNumber.length < 9) {
-      setError("Enter a valid MoMo number");
+      setError(t("sub.checkout.momoError"));
       return;
     }
     setLoading(true);
@@ -91,7 +93,7 @@ export default function SubscribeClient() {
       setPollStart(Date.now());
       setStep("polling");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Payment initiation failed");
+      setError(err instanceof Error ? err.message : t("sub.error.payment"));
     } finally {
       setLoading(false);
     }
@@ -105,7 +107,7 @@ export default function SubscribeClient() {
 
     // Timeout: if polling > 2 min, treat as failed
     if (pollStart && Date.now() - pollStart > POLL_TIMEOUT_MS) {
-      setError("Payment timed out. Please try again or check your MoMo notifications.");
+      setError(t("sub.poll.timeout"));
       setStep("checkout");
       return;
     }
@@ -120,7 +122,7 @@ export default function SubscribeClient() {
       if (data.activated) {
         setStep("done");
       } else if (data.status === "FAILED" || data.status === "EXPIRED") {
-        setError(data.message || "Payment failed. Please try again.");
+        setError(data.message || t("sub.error.failed"));
         setStep("checkout");
       }
     } catch {
@@ -147,10 +149,10 @@ export default function SubscribeClient() {
       <section className="expert-hero">
         <div className="c">
           <h1 style={{ fontFamily: "var(--fd)", fontSize: "clamp(28px,5vw,44px)", fontWeight: 800, color: "var(--t1)", marginBottom: 12 }}>
-            Subscribe to Farm Doctor
+            {t("sub.title")}
           </h1>
           <p style={{ color: "var(--t2)", maxWidth: 540, margin: "0 auto", fontSize: 16, lineHeight: 1.7 }}>
-            Unlock more AI diagnoses, voice minutes, and expert access with a paid plan.
+            {t("sub.subtitle")}
           </p>
         </div>
       </section>
@@ -161,7 +163,7 @@ export default function SubscribeClient() {
           {step === "phone" && (
             <>
               <div className="form-group">
-                <label>Your Phone Number <span className="req">*</span></label>
+                <label>{t("sub.phone.label")} <span className="req">*</span></label>
                 <input
                   type="tel"
                   placeholder={`e.g. ${PHONE_PLACEHOLDER}`}
@@ -169,11 +171,11 @@ export default function SubscribeClient() {
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   onKeyDown={(e) => e.key === "Enter" && lookupPhone()}
                 />
-                <div className="hint">Enter the phone number you use on WhatsApp or Telegram.</div>
+                <div className="hint">{t("sub.phone.hint")}</div>
               </div>
               {error && <div className="form-status error" style={{ display: "block" }}>{error}</div>}
               <button className={`btn-submit${loading ? " loading" : ""}`} onClick={lookupPhone} disabled={loading}>
-                <span>Check My Subscription</span>
+                <span>{t("sub.phone.btn")}</span>
                 <div className="spinner" />
               </button>
             </>
@@ -184,17 +186,15 @@ export default function SubscribeClient() {
             <>
               {isActive && currentSub && (
                 <div className="payment-box" style={{ marginBottom: 28, borderColor: "var(--g1)" }}>
-                  <h4 style={{ color: "var(--g3)" }}>Current Plan: {planLabels[currentPlan] || currentPlan}</h4>
+                  <h4 style={{ color: "var(--g3)" }}>{t("sub.plan.current")}: {planLabels[currentPlan] || currentPlan}</h4>
                   <p>
-                    Active until <strong style={{ color: "var(--gold2)" }}>{new Date(currentSub.expires_at).toLocaleDateString()}</strong>
+                    {t("sub.plan.active")} <strong style={{ color: "var(--gold2)" }}>{new Date(currentSub.expires_at).toLocaleDateString()}</strong>
                   </p>
-                  <p style={{ marginTop: 8, fontSize: 12 }}>You can upgrade to a higher plan below.</p>
+                  <p style={{ marginTop: 8, fontSize: 12 }}>{t("sub.plan.upgrade")}</p>
                 </div>
               )}
               {!isActive && (
-                <div style={{ marginBottom: 24, padding: "14px 18px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", fontSize: 14, color: "var(--t2)" }}>
-                  You&apos;re currently on the <strong style={{ color: "var(--t1)" }}>Free</strong> plan.
-                </div>
+                <div style={{ marginBottom: 24, padding: "14px 18px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", fontSize: 14, color: "var(--t2)" }} dangerouslySetInnerHTML={{ __html: t("sub.plan.free") }} />
               )}
 
               <div style={{ display: "grid", gap: 16 }}>
@@ -218,16 +218,16 @@ export default function SubscribeClient() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                         <h3 style={{ fontFamily: "var(--fd)", fontSize: 20, fontWeight: 700, color: "var(--t1)" }}>
                           {planLabels[p.name]}
-                          {isCurrent && <span style={{ fontSize: 12, color: "var(--g3)", marginLeft: 8, fontFamily: "var(--ff)" }}>CURRENT</span>}
+                          {isCurrent && <span style={{ fontSize: 12, color: "var(--g3)", marginLeft: 8, fontFamily: "var(--ff)" }}>{t("sub.plan.current_badge")}</span>}
                         </h3>
                         <div style={{ fontFamily: "var(--fd)", fontSize: 24, fontWeight: 800, color: "var(--gold2)" }}>
-                          {p.price.toLocaleString()} <span style={{ fontSize: 12, fontWeight: 400, color: "var(--t3)" }}>XAF/mo</span>
+                          {p.price.toLocaleString()} <span style={{ fontSize: 12, fontWeight: 400, color: "var(--t3)" }}>{t("sub.perMonth")}</span>
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 16, fontSize: 13, color: "var(--t3)", flexWrap: "wrap" }}>
-                        <span>{p.limits.image_analyses} image diagnoses</span>
-                        <span>{p.limits.voice_minutes} voice minutes</span>
-                        {p.limits.can_access_experts && <span style={{ color: "var(--gold2)" }}>Expert access</span>}
+                        <span>{p.limits.image_analyses} {t("sub.plan.img")}</span>
+                        <span>{p.limits.voice_minutes} {t("sub.plan.voice")}</span>
+                        {p.limits.can_access_experts && <span style={{ color: "var(--gold2)" }}>{t("sub.plan.expert")}</span>}
                       </div>
                     </div>
                   );
@@ -238,7 +238,7 @@ export default function SubscribeClient() {
                 onClick={() => { setStep("phone"); setError(""); }}
                 style={{ marginTop: 20, background: "none", border: "none", color: "var(--t3)", cursor: "pointer", fontSize: 14, fontFamily: "var(--ff)" }}
               >
-                ← Change phone number
+                {t("sub.plan.changePhone")}
               </button>
             </>
           )}
@@ -252,7 +252,7 @@ export default function SubscribeClient() {
                   {(plans.find((p) => p.name === selectedPlan)?.price || 0).toLocaleString()} XAF
                   <span> / month</span>
                 </div>
-                <p>Payment will be sent to your MoMo number. Confirm on your phone to activate.</p>
+                <p>{t("sub.checkout.desc")}</p>
               </div>
 
               <div className="payment-methods">
@@ -267,7 +267,7 @@ export default function SubscribeClient() {
               </div>
 
               <div className="form-group" style={{ marginTop: 20 }}>
-                <label>MoMo Number <span className="req">*</span></label>
+                <label>{t("sub.checkout.momo")} <span className="req">*</span></label>
                 <input
                   type="tel"
                   placeholder={`e.g. ${PHONE_PLACEHOLDER}`}
@@ -279,7 +279,7 @@ export default function SubscribeClient() {
               {error && <div className="form-status error" style={{ display: "block" }}>{error}</div>}
 
               <button className={`btn-submit${loading ? " loading" : ""}`} onClick={initiatePayment} disabled={loading}>
-                <span>Pay {(plans.find((p) => p.name === selectedPlan)?.price || 0).toLocaleString()} XAF</span>
+                <span>{t("sub.checkout.pay")} {(plans.find((p) => p.name === selectedPlan)?.price || 0).toLocaleString()} XAF</span>
                 <div className="spinner" />
               </button>
 
@@ -287,7 +287,7 @@ export default function SubscribeClient() {
                 onClick={() => { setStep("plans"); setError(""); }}
                 style={{ marginTop: 16, background: "none", border: "none", color: "var(--t3)", cursor: "pointer", fontSize: 14, fontFamily: "var(--ff)", width: "100%", textAlign: "center" }}
               >
-                ← Back to plans
+                {t("sub.checkout.back")}
               </button>
             </>
           )}
@@ -297,23 +297,23 @@ export default function SubscribeClient() {
             <div style={{ textAlign: "center", padding: "40px 0" }}>
               <div className="spinner" style={{ display: "block", width: 40, height: 40, border: "3px solid var(--border)", borderTopColor: "var(--g2)", margin: "0 auto 24px" }} />
               <h3 style={{ fontFamily: "var(--fd)", fontSize: 22, fontWeight: 700, color: "var(--t1)", marginBottom: 12 }}>
-                Waiting for Payment
+                {t("sub.poll.title")}
               </h3>
               <p style={{ color: "var(--t2)", fontSize: 15, lineHeight: 1.7, maxWidth: 360, margin: "0 auto" }}>
-                A payment request has been sent to your phone. Please confirm on your device.
+                {t("sub.poll.desc")}
               </p>
               <div style={{ marginTop: 20, padding: "12px 18px", background: "var(--surface)", borderRadius: "var(--r)", display: "inline-block" }}>
-                <span style={{ fontSize: 13, color: "var(--t3)" }}>Status: </span>
+                <span style={{ fontSize: 13, color: "var(--t3)" }}>{t("sub.poll.status")}: </span>
                 <span style={{ fontSize: 13, fontWeight: 600, color: pollStatus === "PENDING" ? "var(--gold2)" : "var(--t2)" }}>
                   {pollStatus || "PENDING"}
                 </span>
               </div>
               {pollMessage && <p style={{ marginTop: 12, fontSize: 13, color: "var(--t3)" }}>{pollMessage}</p>}
               <button
-                onClick={() => { setError("Payment cancelled."); setStep("checkout"); }}
+                onClick={() => { setError(t("sub.poll.cancelled")); setStep("checkout"); }}
                 style={{ marginTop: 24, background: "none", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "10px 24px", color: "var(--t3)", cursor: "pointer", fontSize: 14, fontFamily: "var(--ff)" }}
               >
-                Cancel
+                {t("sub.poll.cancel")}
               </button>
             </div>
           )}
@@ -327,17 +327,16 @@ export default function SubscribeClient() {
                 </svg>
               </div>
               <h3 style={{ fontFamily: "var(--fd)", fontSize: 24, fontWeight: 700, color: "var(--t1)", marginBottom: 12 }}>
-                Subscription Active!
+                {t("sub.done.title")}
               </h3>
               <p style={{ color: "var(--t2)", fontSize: 15, lineHeight: 1.7, maxWidth: 400, margin: "0 auto" }}>
-                Your <strong style={{ color: "var(--gold2)" }}>{planLabels[selectedPlan]}</strong> plan is now active.
-                Start chatting on WhatsApp or Telegram to use your new benefits.
+                {t("sub.done.desc1")} <strong style={{ color: "var(--gold2)" }}>{planLabels[selectedPlan]}</strong> {t("sub.done.desc2")}
               </p>
               <div style={{ marginTop: 28, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
                 <a href={WA_LINK} className="btn btn-wa" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  Open WhatsApp
+                  {t("sub.done.wa")}
                 </a>
-                <a href="/" className="btn btn-o">Back to Home</a>
+                <a href="/" className="btn btn-o">{t("sub.done.home")}</a>
               </div>
             </div>
           )}

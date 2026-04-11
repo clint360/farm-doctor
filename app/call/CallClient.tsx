@@ -5,6 +5,7 @@ import Image from "next/image";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { RetellWebClient } from "retell-client-js-sdk";
+import { useI18n } from "@/lib/i18n";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
@@ -53,14 +54,16 @@ function formatTime(totalSec: number): string {
 type CallState = "idle" | "connecting" | "active" | "ended";
 
 export function CallClient() {
+  const { t } = useI18n();
+  const tRef = useRef(t);
+  useEffect(() => { tRef.current = t; }, [t]);
+
   const [state, setState] = useState<CallState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [timer, setTimer] = useState("00:00");
   const [callElapsed, setCallElapsed] = useState(0);
-  const [subText, setSubText] = useState(
-    "Tap the green button to start a voice call with our AI agronomist"
-  );
+  const [subText, setSubText] = useState("");
   const [isTalking, setIsTalking] = useState(false);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const retellRef = useRef<RetellWebClient | null>(null);
@@ -135,8 +138,8 @@ export function CallClient() {
 
     setState("ended");
     setSubText(getRemainingSeconds() > 0
-      ? "Tap the green button to call again"
-      : "You've used your 3 free minutes for today");
+      ? tRef.current("call.tapAgain")
+      : tRef.current("call.exhausted"));
     setIsTalking(false);
     stopTimer();
     retellRef.current = null;
@@ -152,14 +155,14 @@ export function CallClient() {
     const left = getRemainingSeconds();
     setRemainingSec(left);
     if (left <= 0) {
-      setError("You've used your 3 free minutes for today. Please try again tomorrow.");
+      setError(tRef.current("call.exhaustedError"));
       return;
     }
 
     setState("connecting");
     setError(null);
     setIsTalking(false);
-    setSubText("Setting up your call with Farm Doctor AI");
+    setSubText(tRef.current("call.setup"));
 
     try {
       const res = await fetch(
@@ -190,7 +193,7 @@ export function CallClient() {
 
       client.on("call_started", () => {
         setState("active");
-        setSubText("Speak to describe your crop issue");
+        setSubText(tRef.current("call.active"));
         startTimer(serverRemaining);
       });
 
@@ -212,12 +215,12 @@ export function CallClient() {
 
       client.on("agent_start_talking", () => {
         setIsTalking(true);
-        setSubText("AI is speaking...");
+        setSubText(tRef.current("call.active"));
       });
 
       client.on("agent_stop_talking", () => {
         setIsTalking(false);
-        setSubText("Listening...");
+        setSubText(tRef.current("call.active"));
       });
 
       await client.startCall({
@@ -227,7 +230,7 @@ export function CallClient() {
       setState("idle");
       setError(
         (err as Error).message ||
-        "Failed to start call. Please check your microphone permissions and try again."
+        tRef.current("call.startError")
       );
     }
   }, [state, startTimer, stopTimer]);
@@ -260,12 +263,12 @@ export function CallClient() {
 
   const statusText =
     state === "connecting"
-      ? "Connecting..."
+      ? t("call.connecting")
       : state === "active"
-        ? "Call Active"
+        ? t("call.active")
         : state === "ended"
-          ? "Call Ended"
-          : "Farm Doctor AI";
+          ? t("call.ended")
+          : t("call.title");
 
   return (
     <>
@@ -309,7 +312,7 @@ export function CallClient() {
           </div>
 
           {isActive && (
-            <div className="call-limit-hint">{formatTime(remainingSec)} remaining today</div>
+            <div className="call-limit-hint">{formatTime(remainingSec)} {t("call.remaining")}</div>
           )}
 
           <div className="call-controls">
@@ -317,7 +320,7 @@ export function CallClient() {
               <button
                 className={`ctrl-btn btn-mute${isMuted ? " muted" : ""}`}
                 onClick={toggleMute}
-                title={isMuted ? "Unmute" : "Mute"}
+                title={isMuted ? t("call.unmute") : t("call.mute")}
               >
                 <svg viewBox="0 0 24 24">
                   <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
@@ -333,7 +336,7 @@ export function CallClient() {
                 className="ctrl-btn btn-call"
                 style={{ opacity: exhausted ? 0.5 : 1 }}
                 onClick={startCall}
-                title={exhausted ? "No minutes left today" : "Start Call"}
+                title={exhausted ? t("call.noMinutes") : t("call.start")}
               >
                 <svg viewBox="0 0 24 24">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
@@ -346,7 +349,7 @@ export function CallClient() {
                 className="ctrl-btn btn-hangup"
                 style={{ display: "flex" }}
                 onClick={endCall}
-                title="End Call"
+                title={t("call.end")}
               >
                 <svg viewBox="0 0 24 24">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
@@ -363,10 +366,7 @@ export function CallClient() {
 
           <div className="call-info">
             <p>
-              <strong>How it works:</strong> Click the call button to connect
-              with our AI agronomist. Describe your crop problems or ask farming
-              questions in English, French, or Pidgin. The AI will respond with
-              expert advice in real-time.
+              <strong>{t("call.howTitle")}</strong> {t("call.howDesc")}
             </p>
           </div>
         </div>
