@@ -36,7 +36,7 @@ export function ExpertApplyClient() {
     e.preventDefault();
     setError("");
 
-    if (!fullName || !phone || !location || !coverLetter) {
+    if (!fullName || !phone || !location || !linkedin || !coverLetter) {
       setError(t("exp.error.fields"));
       return;
     }
@@ -165,8 +165,8 @@ export function ExpertApplyClient() {
                 </div>
 
                 <div className="form-group">
-                  <label>{t("exp.form.linkedin")}</label>
-                  <input type="url" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
+                  <label>{t("exp.form.linkedin")} <span className="req">*</span></label>
+                  <input type="url" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} required />
                 </div>
 
                 <div className="form-group">
