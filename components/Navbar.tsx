@@ -79,7 +79,7 @@ export function Navbar() {
           <li><a href="#features" onClick={(e) => handleNavClick(e, "#features")}>{t("nav.features")}</a></li>
           <li><a href="#channels" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
           <li><a href="#pricing" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
-          <li><Link href="/insights" style={{ color: "var(--g3)" }}>Insights</Link></li>
+          <li><Link href="/insights" style={{ color: "var(--gold)" }}>Insights</Link></li>
           <li><a href="#faq" onClick={(e) => handleNavClick(e, "#faq")}>{t("nav.faq")}</a></li>
           <li>
             <div className="lang-drop" ref={langRef}>
