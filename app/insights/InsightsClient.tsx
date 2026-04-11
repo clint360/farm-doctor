@@ -212,6 +212,7 @@ export function InsightsClient() {
   const [notACrop, setNotACrop] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const loadingKeys = [
     t("ins.loading.1"), t("ins.loading.2"), t("ins.loading.3"),
@@ -300,7 +301,7 @@ export function InsightsClient() {
             </h1>
             <p className="ins-sub">{t("ins.sub")}</p>
 
-            <form className="ins-form" onSubmit={handleSearch} autoComplete="off">
+            <form ref={formRef} className="ins-form" onSubmit={handleSearch} autoComplete="off">
               <div className="ins-search-bar">
                 <div className="ins-search-icon"><IconSearch /></div>
                 <input
@@ -309,6 +310,7 @@ export function InsightsClient() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
                   placeholder={t("ins.placeholder")}
                   autoComplete="off"
                   spellCheck={false}
@@ -495,7 +497,7 @@ const INSIGHTS_CSS = `
 .ins-sub{font-size:17px;color:var(--t2);max-width:520px;margin:0 auto 32px;line-height:1.75;font-weight:300}
 
 /* ── Search bar ── */
-.ins-form{max-width:640px;margin:0 auto 20px}
+.ins-form{max-width:640px;margin:0 auto 20px;scroll-margin-top:88px}
 .ins-search-bar{display:flex;align-items:center;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:100px;padding:6px 6px 6px 20px;transition:border-color .3s,box-shadow .3s;gap:8px}
 .ins-search-bar:focus-within{border-color:var(--g2);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
 .ins-search-icon{color:var(--t3);display:flex;align-items:center;flex-shrink:0}
@@ -516,7 +518,7 @@ const INSIGHTS_CSS = `
 .ins-remaining{font-size:12px;color:var(--t3);text-align:center}
 
 /* ── Results ── */
-.ins-results{flex:1;padding:40px 0 80px}
+.ins-results{flex:1;padding:30px 0 30px}
 
 /* ── Error ── */
 .ins-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:16px;padding:20px 24px;display:flex;align-items:flex-start;gap:12px;color:#fca5a5;font-size:14px;line-height:1.6;max-width:640px;margin:0 auto}
