@@ -285,7 +285,7 @@ const T: Record<Lang, Record<string, string>> = {
     "how.s3t": "Solutions",
     "how.s3d": "Conseils de traitement dans votre langue avec des produits locaux.",
     "f.tag": "Fonctionnalit\u00e9s",
-    "f.title": "Con\u00e7u pour l\u2019Afrique",
+    "f.title": "Con\u00e7u pour l\u2019Afrique.",
     "f.sub": "IA puissante sur vos outils habituels.",
     "f.1t": "Diagnostic photo",
     "f.1d": "Envoyez une photo pour une analyse instantan\u00e9e.",
