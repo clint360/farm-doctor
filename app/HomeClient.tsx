@@ -176,6 +176,46 @@ export function HomeClient() {
         </div>
       </section>
 
+      {/* INSIGHTS PROMO */}
+      <section className="insp" id="insights">
+        <div className="c">
+          <div className="insp-h rv">
+            <div className="tag">{t("ins.lp.tag")}</div>
+            <h2 className="stl">{t("ins.lp.title")}</h2>
+            <p className="sts">{t("ins.lp.sub")}</p>
+          </div>
+          <div className="insp-g sg">
+            <div className="insp-fc rv">
+              <div className="insp-fc-i insp-fc-i-g">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22v-5l5-5 5 5-5 5z"/><path d="M9.5 14.5 16 8"/><path d="m17 2 5 5-.5.5a3.53 3.53 0 0 1-5 0s0 0 0 0a3.53 3.53 0 0 1 0-5L17 2"/></svg>
+              </div>
+              <h3>{t("ins.lp.c1")}</h3>
+            </div>
+            <div className="insp-fc rv">
+              <div className="insp-fc-i insp-fc-i-r">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              </div>
+              <h3>{t("ins.lp.c2")}</h3>
+            </div>
+            <div className="insp-fc rv">
+              <div className="insp-fc-i insp-fc-i-b">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              </div>
+              <h3>{t("ins.lp.c3")}</h3>
+            </div>
+            <div className="insp-fc rv">
+              <div className="insp-fc-i insp-fc-i-o">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h3>{t("ins.lp.c4")}</h3>
+            </div>
+          </div>
+          <div className="insp-cta rv">
+            <a href="/insights" className="btn btn-g">{t("ins.lp.btn")}</a>
+          </div>
+        </div>
+      </section>
+
       {/* CHANNELS */}
       <section className="chan" id="channels">
         <div className="c">

@@ -16,6 +16,7 @@ const apiHeaders: Record<string, string> = {
 };
 
 const MAX_DAILY_SECONDS = 3 * 60; // 3 minutes total per day
+const GRACE_PERIOD_SECONDS = 30; // Grace period after time expires
 const USAGE_KEY = "fd_call_usage";
 
 interface UsageData { date: string; usedSeconds: number }
@@ -89,6 +90,7 @@ export function CallClient() {
   }, []);
 
   const endCallRef = useRef<(() => void) | null>(null);
+  const graceStateRef = useRef<{ limitHitTime: number | null }>({ limitHitTime: null });
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
@@ -100,6 +102,8 @@ export function CallClient() {
   const startTimer = useCallback((maxSec: number) => {
     startTimeRef.current = Date.now();
     setCallElapsed(0);
+    graceStateRef.current = { limitHitTime: null }; // Reset grace state for new call
+    
     timerRef.current = setInterval(() => {
       const elapsed = Math.floor(
         (Date.now() - startTimeRef.current) / 1000
@@ -108,7 +112,17 @@ export function CallClient() {
       setTimer(formatTime(elapsed));
       setRemainingSec(Math.max(0, getRemainingSeconds() - elapsed));
 
-      if (elapsed >= maxSec && endCallRef.current) {
+      // When time limit is reached, mark the moment
+      if (elapsed >= maxSec && graceStateRef.current.limitHitTime === null) {
+        graceStateRef.current.limitHitTime = elapsed;
+      }
+
+      // After grace period expires (30 sec after 00:00), end the call
+      if (
+        graceStateRef.current.limitHitTime !== null &&
+        elapsed - graceStateRef.current.limitHitTime >= GRACE_PERIOD_SECONDS &&
+        endCallRef.current
+      ) {
         endCallRef.current();
       }
     }, 1000);

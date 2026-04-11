@@ -28,6 +28,7 @@ export function Footer() {
             <a href="#features">{t("nav.features")}</a>
             <a href="#pricing">{t("nav.pricing")}</a>
             <a href="#faq">{t("nav.faq")}</a>
+            <Link href="/insights">Crop Insights</Link>
             <Link href="/expert-apply">Become an Expert</Link>
             <Link href="/call">AI Voice Call</Link>
           </div>
