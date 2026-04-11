@@ -4,13 +4,13 @@ import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { PHONE_PLACEHOLDER } from "@/lib/contacts";
 import { useI18n } from "@/lib/i18n";
+import { validatePhone, validateName, validateText, validateLinkedInUrl } from "@/lib/security";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 const apiHeaders: Record<string, string> = {
   "Content-Type": "application/json",
   "Accept": "application/json",
-  "ngrok-skip-browser-warning": "true",
 };
 
 type Step = "form" | "polling" | "done";
@@ -36,8 +36,25 @@ export function ExpertApplyClient() {
     e.preventDefault();
     setError("");
 
-    if (!fullName || !phone || !location || !linkedin || !coverLetter) {
-      setError(t("exp.error.fields"));
+    // Validate all required fields
+    if (!validateName(fullName)) {
+      setError("Full name must be 2-100 characters without special characters");
+      return;
+    }
+    if (!validatePhone(phone)) {
+      setError("Invalid phone number (9-15 digits)");
+      return;
+    }
+    if (!location || location.trim().length < 2 || location.length > 100) {
+      setError("Location must be 2-100 characters");
+      return;
+    }
+    if (!linkedin || !validateLinkedInUrl(linkedin)) {
+      setError("Valid LinkedIn URL (https://linkedin.com/...) is required");
+      return;
+    }
+    if (!validateText(coverLetter, 20, 2000)) {
+      setError("Cover letter must be 20-2000 characters");
       return;
     }
 
@@ -93,8 +110,8 @@ export function ExpertApplyClient() {
         setError(data.message || t("exp.error.failed"));
         setStep("form");
       }
-    } catch {
-      // silent retry
+    } catch (err) {
+      console.error("[EXPERT] Application status check failed:", err);
     }
   }, [transId, pollStart]);
 

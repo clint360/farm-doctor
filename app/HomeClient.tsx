@@ -62,11 +62,17 @@ export function HomeClient() {
             <Image src="/fdlogo.png" alt="Farm Doctor AI" className="hero-img" width={380} height={380} priority />
             <div className="hero-card hc1">
               <div className="hcn">2K+</div>
-              <div className="hcl" dangerouslySetInnerHTML={{ __html: t("hero.s1") }} />
+              <div className="hcl">
+                {/* Controlled content from i18n translations - safe for dangerouslySetInnerHTML */}
+                <div dangerouslySetInnerHTML={{ __html: t("hero.s1") }} />
+              </div>
             </div>
             <div className="hero-card hc2">
               <div className="hcn">95%</div>
-              <div className="hcl" dangerouslySetInnerHTML={{ __html: t("hero.s2") }} />
+              <div className="hcl">
+                {/* Controlled content from i18n translations - safe for dangerouslySetInnerHTML */}
+                <div dangerouslySetInnerHTML={{ __html: t("hero.s2") }} />
+              </div>
             </div>
           </div>
         </div>

@@ -4,13 +4,19 @@ import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { WA_LINK, PHONE_PLACEHOLDER } from "@/lib/contacts";
 import { useI18n } from "@/lib/i18n";
+import { validatePhone } from "@/lib/security";
+
+// Validation for MoMo numbers (same pattern as phone)
+function validateMoMo(momo: string): boolean {
+  const cleaned = momo.replace(/\D/g, "");
+  return cleaned.length >= 9 && cleaned.length <= 15;
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
 const apiHeaders: Record<string, string> = {
   "Content-Type": "application/json",
   "Accept": "application/json",
-  "ngrok-skip-browser-warning": "true",
 };
 
 type Plan = {
@@ -48,7 +54,7 @@ export default function SubscribeClient() {
 
   // ── Step 1: Lookup phone ──
   const lookupPhone = async () => {
-    if (!phone || phone.length < 9) {
+    if (!validatePhone(phone)) {
       setError(`${t("sub.phone.error")} (e.g. ${PHONE_PLACEHOLDER})`);
       return;
     }
@@ -75,7 +81,7 @@ export default function SubscribeClient() {
 
   // ── Step 3: Initiate payment ──
   const initiatePayment = async () => {
-    if (!momoNumber || momoNumber.length < 9) {
+    if (!validateMoMo(momoNumber)) {
       setError(t("sub.checkout.momoError"));
       return;
     }
@@ -125,8 +131,8 @@ export default function SubscribeClient() {
         setError(data.message || t("sub.error.failed"));
         setStep("checkout");
       }
-    } catch {
-      // silent retry
+    } catch (err) {
+      console.error("[SUBSCRIBE] Payment status check failed:", err);
     }
   }, [transId, pollStart]);
 

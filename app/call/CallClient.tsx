@@ -12,7 +12,6 @@ const BACKEND_URL =
 
 const apiHeaders: Record<string, string> = {
   "Content-Type": "application/json",
-  "ngrok-skip-browser-warning": "true",
 };
 
 const MAX_DAILY_SECONDS = 3 * 60; // 3 minutes total per day
@@ -147,7 +146,9 @@ export function CallClient() {
         method: "POST",
         headers: apiHeaders,
         body: JSON.stringify({ duration }),
-      }).catch(() => {});
+      }).catch((err) => {
+        console.error("[CALL] Failed to report call duration:", err);
+      });
     }
 
     setState("ended");

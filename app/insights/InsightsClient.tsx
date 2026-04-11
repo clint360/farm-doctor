@@ -9,7 +9,6 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.
 const apiHeaders: Record<string, string> = {
   "Content-Type": "application/json",
   Accept: "application/json",
-  "ngrok-skip-browser-warning": "true",
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
