@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* ─── Farm Doctor Design System ─────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box; zoom:102%}
