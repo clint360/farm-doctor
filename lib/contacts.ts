@@ -13,5 +13,5 @@ export const FACEBOOK_URL = process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www
 
 export const PHONE_PLACEHOLDER = process.env.NEXT_PUBLIC_PHONE_PLACEHOLDER || "680612360";
 
-export const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi👋 I need help with my farm")}`;
+export const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const TG_LINK = `https://t.me/${TELEGRAM_BOT}`;
