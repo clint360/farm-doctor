@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SubNavbar } from "@/components/Navbar";
+import { Navbar, SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { useI18n } from "@/lib/i18n";
 
@@ -68,7 +68,7 @@ export default function CityChemistClient() {
 
   return (
     <>
-      <SubNavbar />
+      <Navbar />
 
       {/* ── Hero section ─────────────────────────────────────────────────── */}
       <section className="cc-hero">

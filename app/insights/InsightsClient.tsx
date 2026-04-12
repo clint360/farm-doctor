@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { SubNavbar } from "@/components/Navbar";
+import { Navbar, SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { useI18n } from "@/lib/i18n";
 
@@ -281,7 +281,7 @@ export function InsightsClient() {
     <>
       <style>{INSIGHTS_CSS}</style>
       <div className="ins-page">
-        <SubNavbar />
+        <Navbar />
 
         {/* ─── Hero ─────────────────────────────────────────────────────── */}
         <section className="ins-hero">
