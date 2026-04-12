@@ -80,7 +80,15 @@ export function Navbar() {
           <li><a href="#channels" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
           <li><a href="#pricing" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
           <li><Link href="/insights" style={{ color: "var(--gold)" }}>Insights</Link></li>
-          <li><a href="#faq" onClick={(e) => handleNavClick(e, "#faq")}>{t("nav.faq")}</a></li>
+          <li>
+            <Link href="/city-chemist" style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              City Chemist
+            </Link>
+          </li>
           <li>
             <div className="lang-drop" ref={langRef}>
               <button className="ls" onClick={() => setLangOpen(!langOpen)}>
