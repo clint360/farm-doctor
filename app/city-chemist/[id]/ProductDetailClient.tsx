@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
 import { CATEGORY_STYLE } from "../CityChemistClient";
+import { useI18n } from "@/lib/i18n";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -32,6 +33,7 @@ type OrderForm = {
 };
 
 export default function ProductDetailClient({ id }: { id: string }) {
+  const { t } = useI18n();
   const [product, setProduct]         = useState<Product | null>(null);
   const [loading, setLoading]         = useState(true);
   const [notFound, setNotFound]       = useState(false);
@@ -78,7 +80,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
       if (!res.ok) throw new Error(json.message || "Order failed");
       setSubmitted(true);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setSubmitError(err instanceof Error ? err.message : t("cc.pd.form.error"));
     } finally {
       setSubmitting(false);
     }
@@ -89,9 +91,9 @@ export default function ProductDetailClient({ id }: { id: string }) {
     return (
       <>
         <SubNavbar />
-        <div className="pd-center" style={{ minHeight: "70vh" }}>
+        <div className="pd-center" style={{ minHeight: "90vh" }}>
           <div className="pd-spinner" />
-          <span style={{ color: "var(--t3)", fontSize: 14 }}>Loading…</span>
+          <span style={{ color: "var(--t3)", fontSize: 14 }}>{t("cc.pd.loading")}</span>
         </div>
         <SimpleFooter />
         <PDStyles />
@@ -106,9 +108,9 @@ export default function ProductDetailClient({ id }: { id: string }) {
         <SubNavbar />
         <div className="pd-center" style={{ minHeight: "70vh", textAlign: "center", padding: "2rem", gap: "1rem" }}>
           <div style={{ fontSize: "3rem", opacity: .4 }}>🌿</div>
-          <h1 style={{ fontFamily: "var(--fd)", fontSize: "1.6rem", color: "var(--t1)" }}>Product not found</h1>
-          <p style={{ color: "var(--t3)", fontSize: 14 }}>This product may have been removed or is unavailable.</p>
-          <Link href="/city-chemist" className="pd-back-link">← Back to City Chemist</Link>
+          <h1 style={{ fontFamily: "var(--fd)", fontSize: "1.6rem", color: "var(--t1)" }}>{t("cc.pd.notfound.title")}</h1>
+          <p style={{ color: "var(--t3)", fontSize: 14 }}>{t("cc.pd.notfound.desc")}</p>
+          <Link href="/city-chemist" className="pd-back-link">{t("cc.pd.notfound.back")}</Link>
         </div>
         <SimpleFooter />
         <PDStyles />
@@ -123,7 +125,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
     return (
       <>
         <SubNavbar />
-        <div className="pd-center" style={{ minHeight: "80vh", padding: "2rem" }}>
+        <div className="pd-center" style={{ minHeight: "80vh", padding: "2rem"}}>
           <div className="pd-thankyou">
             {/* Glowing icon */}
             <div className="pd-ty-icon">
@@ -132,13 +134,12 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 <polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
             </div>
-            <h2 className="pd-ty-h">Order Received!</h2>
+            <h2 className="pd-ty-h">{t("cc.pd.ty.title")}</h2>
             <p className="pd-ty-p">
-              Thanks for ordering <strong style={{ color: "var(--t1)" }}>{product.name}</strong>.<br />
-              Our team will reach out soon to confirm delivery. No payment required yet.
+              {t("cc.pd.ty.desc").replace("{name}", product.name)}
             </p>
             <Link href="/city-chemist" className="pd-btn-primary" style={{ display: "inline-block", textAlign: "center" }}>
-              Browse more products
+              {t("cc.pd.ty.browse")}
             </Link>
           </div>
         </div>
@@ -153,10 +154,10 @@ export default function ProductDetailClient({ id }: { id: string }) {
     <>
       <SubNavbar />
 
-      <main className="pd-main">
+      <main className="pd-main" style={{marginTop: "15px"}}>
         {/* Breadcrumb */}
         <nav className="pd-breadcrumb">
-          <Link href="/city-chemist" className="pd-back-link">← City Chemist</Link>
+          <Link href="/city-chemist" className="pd-back-link">{t("cc.pd.back")}</Link>
           <span className="pd-bc-sep">/</span>
           <span className="pd-bc-current">{product.name}</span>
         </nav>
@@ -194,7 +195,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
               )}
               <div className="pd-stock" style={{ color: product.in_stock ? "var(--g3)" : "var(--t3)" }}>
                 <span className="pd-stock-dot" style={{ background: product.in_stock ? "var(--g2)" : "rgba(255,255,255,.2)" }} />
-                {product.in_stock ? "In Stock" : "Out of Stock"}
+                {product.in_stock ? t("cc.pd.instock") : t("cc.pd.outstock")}
               </div>
             </div>
 
@@ -211,42 +212,42 @@ export default function ProductDetailClient({ id }: { id: string }) {
                   </svg>
                 </div>
                 <div>
-                  <div className="pd-form-title">Place an Order</div>
-                  <div className="pd-form-subtitle">No payment now — we&apos;ll confirm delivery with you.</div>
+                  <div className="pd-form-title">{t("cc.pd.form.title")}</div>
+                  <div className="pd-form-subtitle">{t("cc.pd.form.sub")}</div>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="pd-form">
                 <PField
-                  label="Your Name"
+                  label={t("cc.pd.form.name")}
                   value={form.farmer_name}
                   onChange={(v) => setForm((f) => ({ ...f, farmer_name: v }))}
-                  placeholder="e.g. Jean-Pierre Kamga"
+                  placeholder={t("cc.pd.form.name.ph")}
                   required
                 />
                 <PField
-                  label="Phone Number"
+                  label={t("cc.pd.form.phone")}
                   value={form.phone}
                   type="tel"
                   onChange={(v) => setForm((f) => ({ ...f, phone: v }))}
-                  placeholder="e.g. 6XXXXXXXX"
+                  placeholder={t("cc.pd.form.phone.ph")}
                   required
                 />
                 <PField
-                  label="Location / Village"
+                  label={t("cc.pd.form.location")}
                   value={form.location}
                   onChange={(v) => setForm((f) => ({ ...f, location: v }))}
-                  placeholder="e.g. Bafoussam, West Region"
+                  placeholder={t("cc.pd.form.location.ph")}
                   required
                 />
                 <div className="pf-group">
-                  <label className="pf-label">Why do you need this?</label>
+                  <label className="pf-label">{t("cc.pd.form.reason")}</label>
                   <textarea
                     required
                     rows={3}
                     value={form.reason}
                     onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))}
-                    placeholder="e.g. My maize has pest damage and I need to treat it quickly."
+                    placeholder={t("cc.pd.form.reason.ph")}
                     className="pf-textarea"
                   />
                 </div>
@@ -262,9 +263,9 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 >
                   {submitting ? (
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                      <span className="pd-btn-spinner" /> Submitting…
+                      <span className="pd-btn-spinner" /> {t("cc.pd.form.submitting")}
                     </span>
-                  ) : product.in_stock ? "Place Order" : "Out of Stock"}
+                  ) : product.in_stock ? t("cc.pd.form.btn") : t("cc.pd.outstock")}
                 </button>
               </form>
             </div>

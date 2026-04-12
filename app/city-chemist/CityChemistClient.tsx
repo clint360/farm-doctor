@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SubNavbar } from "@/components/Navbar";
 import { SimpleFooter } from "@/components/Footer";
+import { useI18n } from "@/lib/i18n";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://shon-unmonumented-nigel.ngrok-free.dev";
 
@@ -34,17 +35,18 @@ export const CATEGORY_STYLE: Record<string, { bg: string; color: string; dot: st
   other:      { bg: "rgba(255,255,255,.08)", color: "rgba(255,255,255,.55)", dot: "rgba(255,255,255,.4)" },
 };
 
-const CATEGORIES: { value: Category; label: string; icon: string }[] = [
-  { value: "all",        label: "All",        icon: "⊞" },
-  { value: "pesticide",  label: "Pesticides", icon: "🪲" },
-  { value: "fertilizer", label: "Fertilizers",icon: "🌱" },
-  { value: "herbicide",  label: "Herbicides", icon: "🌿" },
-  { value: "fungicide",  label: "Fungicides", icon: "🍄" },
-  { value: "other",      label: "Other",      icon: "📦" },
+const CATEGORIES: { value: Category; icon: string }[] = [
+  { value: "all",        icon: "⊞" },
+  { value: "pesticide",  icon: "🪲" },
+  { value: "fertilizer", icon: "🌱" },
+  { value: "herbicide",  icon: "🌿" },
+  { value: "fungicide",  icon: "🍄" },
+  { value: "other",      icon: "📦" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function CityChemistClient() {
+  const { t } = useI18n();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState<string | null>(null);
@@ -77,16 +79,13 @@ export default function CityChemistClient() {
         <div className="cc-hero-inner">
           <span className="cc-pill">
             <span className="cc-pill-dot" />
-            Agricultural Supplies · No Upfront Payment
+            {t("cc.hero.badge")}
           </span>
           <h1 className="cc-h1">
-            City<br />
-            <em>Chemist</em>
+            {t("cc.hero.h1a")}<br />
+            <em>{t("cc.hero.h1b")}</em>
           </h1>
-          <p className="cc-sub">
-            Browse pesticides, fertilizers &amp; more. Order in seconds —
-            we&apos;ll contact you to arrange delivery.
-          </p>
+          <p className="cc-sub">{t("cc.hero.sub")}</p>
         </div>
       </section>
 
@@ -103,7 +102,7 @@ export default function CityChemistClient() {
                 className={`cc-filter${active ? " cc-filter-active" : ""}`}
               >
                 <span className="cc-filter-icon">{cat.icon}</span>
-                {cat.label}
+                {t(`cc.cat.${cat.value}`)}
               </button>
             );
           })}
@@ -113,18 +112,18 @@ export default function CityChemistClient() {
         {loading && (
           <div className="cc-state">
             <div className="cc-spinner" />
-            <span>Loading products…</span>
+            <span>{t("cc.loading")}</span>
           </div>
         )}
 
         {!loading && error && (
-          <div className="cc-error">{error}</div>
+          <div className="cc-error">{t("cc.error")}</div>
         )}
 
         {!loading && !error && products.length === 0 && (
           <div className="cc-state">
             <span style={{ fontSize: "2.5rem" }}>🌾</span>
-            <span>No products in this category yet.</span>
+            <span>{t("cc.empty")}</span>
           </div>
         )}
 
@@ -144,25 +143,35 @@ export default function CityChemistClient() {
         .cc-hero {
           position: relative;
           overflow: hidden;
-          padding: 140px 24px 80px;
+          padding: 160px 24px 100px;
           text-align: center;
-          background: var(--bg);
+          background-image:
+            linear-gradient(
+              to bottom,
+              rgba(8,14,10,0.76) 0%,
+              rgba(10,35,18,0.88) 40%,
+              rgba(8,14,10,0.88) 100%
+            ),
+            url('/city-chemist.jpg');
+          background-size: cover;
+          background-position: center;
+          background-color: var(--bg);
         }
         .cc-orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(90px);
+          filter: blur(100px);
           pointer-events: none;
         }
         .cc-orb-1 {
-          width: 420px; height: 420px;
-          background: var(--g1); opacity: .07;
-          top: -80px; left: -60px;
+          width: 480px; height: 480px;
+          background: var(--g1); opacity: .12;
+          top: -100px; left: -80px;
           animation: ccOrb 16s ease-in-out infinite;
         }
         .cc-orb-2 {
-          width: 340px; height: 340px;
-          background: var(--gold); opacity: .05;
+          width: 360px; height: 360px;
+          background: var(--gold); opacity: .08;
           bottom: -60px; right: -40px;
           animation: ccOrb 16s ease-in-out infinite reverse;
           animation-delay: -8s;
@@ -267,12 +276,6 @@ export default function CityChemistClient() {
           overflow: hidden;
           display: flex; flex-direction: column;
           text-decoration: none; color: inherit;
-          transition: border-color .25s, box-shadow .25s, transform .25s;
-        }
-        .cc-card:hover {
-          border-color: rgba(74,222,128,.25);
-          box-shadow: 0 8px 40px rgba(26,140,63,.15);
-          transform: translateY(-3px);
         }
         .cc-card-img {
           width: 100%; height: 200px;
@@ -281,9 +284,7 @@ export default function CityChemistClient() {
         }
         .cc-card-img img {
           width: 100%; height: 100%; object-fit: cover;
-          transition: transform .4s;
         }
-        .cc-card:hover .cc-card-img img { transform: scale(1.04); }
         .cc-card-img-placeholder {
           width: 100%; height: 100%;
           display: flex; align-items: center; justify-content: center;
@@ -307,11 +308,14 @@ export default function CityChemistClient() {
           font-size: 1.1rem; font-weight: 700;
           color: var(--t1); line-height: 1.25;
         }
+        /* Fixed two-line slot — always occupies the same space */
         .cc-card-desc {
           font-size: 13px; color: var(--t3);
-          line-height: 1.55; flex: 1;
+          line-height: 1.5;
+          height: calc(13px * 1.5 * 2); /* exactly 2 lines */
+          overflow: hidden;
           display: -webkit-box; -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical; overflow: hidden;
+          -webkit-box-orient: vertical;
         }
         .cc-card-price {
           font-size: 1rem; font-weight: 700; color: var(--g3);
@@ -327,12 +331,25 @@ export default function CityChemistClient() {
           border-radius: 10px;
           font-size: 13px; font-weight: 700;
           text-align: center; letter-spacing: .3px;
-          transition: background .2s, border-color .2s, color .2s;
         }
-        .cc-card:hover .cc-card-btn {
-          background: var(--g1);
-          border-color: var(--g1);
-          color: #fff;
+        /* Hover only on pointer devices (no touch/mobile) */
+        @media (hover: hover) {
+          .cc-card {
+            transition: border-color .25s, box-shadow .25s, transform .25s;
+          }
+          .cc-card:hover {
+            border-color: rgba(74,222,128,.25);
+            box-shadow: 0 8px 40px rgba(26,140,63,.15);
+            transform: translateY(-3px);
+          }
+          .cc-card-img img { transition: transform .4s; }
+          .cc-card:hover .cc-card-img img { transform: scale(1.04); }
+          .cc-card-btn { transition: background .2s, border-color .2s, color .2s; }
+          .cc-card:hover .cc-card-btn {
+            background: var(--g1);
+            border-color: var(--g1);
+            color: #fff;
+          }
         }
 
         @media (max-width: 600px) {
@@ -350,6 +367,7 @@ export default function CityChemistClient() {
 
 // ─── Product Card ─────────────────────────────────────────────────────────────
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useI18n();
   const s = CATEGORY_STYLE[product.category] ?? CATEGORY_STYLE.other;
 
   return (
@@ -372,16 +390,14 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Body */}
       <div className="cc-card-body">
         <div className="cc-card-name">{product.name}</div>
-        {product.description && (
-          <div className="cc-card-desc">{product.description}</div>
-        )}
+        <div className="cc-card-desc">{product.description ?? ""}</div>
         {product.price != null && (
           <div className="cc-card-price">
             {product.price.toLocaleString()} XAF
             <span>/ {product.unit}</span>
           </div>
         )}
-        <div className="cc-card-btn">View &amp; Order →</div>
+        <div className="cc-card-btn">{t("cc.card.btn")}</div>
       </div>
     </Link>
   );
