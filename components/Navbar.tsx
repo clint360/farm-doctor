@@ -56,6 +56,10 @@ export function Navbar() {
     setMenuOpen(false);
     setLangOpen(false);
 
+    if (window.location.pathname !== "/") {
+      window.location.href = "/";
+    }
+
     if (href.startsWith("#")) {
       // Delay scroll until after scroll-lock is released and layout restores
       setTimeout(() => {
@@ -73,18 +77,20 @@ export function Navbar() {
   return (
     <nav className={`nav${scrolled ? " sk" : ""}`}>
       <div className="c">
-        <Image src="/fdlogo.png" alt="Farm Doctor" className="nav-logo" width={60} height={60} style={{ width: 'auto' }} priority />
+        <a href="/">
+          <Image src="/fdlogo.png" alt="Farm Doctor" className="nav-logo" width={60} height={60} style={{ width: 'auto' }} priority />
+        </a>
         <ul className={`nl${menuOpen ? " open" : ""}`} id="nl">
-          <li><a href="#how" onClick={(e) => handleNavClick(e, "#how")}>{t("nav.how")}</a></li>
-          <li><a href="#features" onClick={(e) => handleNavClick(e, "#features")}>{t("nav.features")}</a></li>
-          <li><a href="#channels" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
-          <li><a href="#pricing" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
+          <li><a href="/" onClick={(e) => handleNavClick(e, "#how")}>{t("nav.how")}</a></li>
+          <li><a href="/" onClick={(e) => handleNavClick(e, "#features")}>{t("nav.features")}</a></li>
+          <li><a href="/" onClick={(e) => handleNavClick(e, "#channels")}>{t("nav.channels")}</a></li>
+          <li><a href="/" onClick={(e) => handleNavClick(e, "#pricing")}>{t("nav.pricing")}</a></li>
           <li><Link href="/insights" style={{ color: "var(--gold)" }}>Insights</Link></li>
           <li>
             <Link href="/city-chemist" style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
               City Chemist
             </Link>
