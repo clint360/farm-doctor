@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.3",
+    "next": "16.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "retell-client-js-sdk": "^3.0.4"
@@ -20,7 +20,7 @@
     "@types/react-dom": "19.0.0",
     "autoprefixer": "^10.4.0",
     "eslint": "9.0.0",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.4.6",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.4.0"
   }
