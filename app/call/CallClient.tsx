@@ -240,6 +240,9 @@ export function CallClient() {
 
       await client.startCall({
         accessToken: data.access_token,
+        callId: data.call_id,
+        transport: data.transport,
+        iceServers: data.ice_servers,
       });
     } catch (err: unknown) {
       setState("idle");
